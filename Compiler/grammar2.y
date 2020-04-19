@@ -24,19 +24,17 @@ int sym[26];                    /* symbol table */
 
 %token <iValue> INTEGER
 %token <sIndex> VARIABLE
-%token WHILE IF PRINT SWITCH CASE DEFAULT BREAK 
-%token AND OR NOT 
-%token BIT_OR BIT_AND BIT_XOR BIT_NOT L_SHIFT R_SHIFT 
+%token WHILE IF PRINT SWITCH CASE DEFAULT BREAK AND OR BIT_OR BIT_AND BIT_XOR NOT
 %nonassoc IFX
 %nonassoc ELSE
 
-%left GE LE EQ NE '>' '<' AND OR NOT
-%left BIT_OR BIT_AND BIT_XOR BIT_NOT L_SHIFT R_SHIFT
+%left GE LE EQ NE '>' '<' AND OR
+%left BIT_OR BIT_AND BIT_XOR
 %left '+' '-'
 %left '*' '/'
-%nonassoc UMINUS
+%nonassoc UMINUS NOT
 
-%type <nPtr> stmt expr stmt_list case_stmt default_stmt case_stmt_list case_stmt_no_def_list
+%type <nPtr> stmt expr stmt_list case_stmt case_stmt_list default_case case_stmt_list_with_default
 
 %%
 
@@ -57,31 +55,18 @@ stmt:
         | WHILE '(' expr ')' stmt        { $$ = opr(WHILE, 2, $3, $5); }
         | IF '(' expr ')' stmt %prec IFX { $$ = opr(IF, 2, $3, $5); }
         | IF '(' expr ')' stmt ELSE stmt { $$ = opr(IF, 3, $3, $5, $7); }
-		| SWITCH '(' expr ')' '{' case_stmt_list '}' { $$ = opr(SWITCH, 2, $3, $6); }
         | '{' stmt_list '}'              { $$ = $2; }
+		| SWITCH '(' expr ')' '{' case_stmt_list '}' { $$ = opr(SWITCH, 2, $3, $6); }
         ;
+
 
 stmt_list:
           stmt                  { $$ = $1; }
         | stmt_list stmt        { $$ = opr(';', 2, $1, $2); }
         ;
 
-case_stmt:
-		  CASE '(' expr ')' ':' stmt_list BREAK ';'	{ $$ = opr(CASE, 2, $3, $6); }
-		;
-
-default_stmt:
-		  DEFAULT ':' stmt_list	BREAK ';'		{ $$ = opr(DEFAULT, 1, $3); }
-
-case_stmt_list:
-		  case_stmt								{ $$ = opr(CASE, 1, $1); }
-		| default_stmt case_stmt_no_def_list	{ $$ = opr(';', 2, $1, $2); }
-		| case_stmt case_stmt_list  			{ $$ = opr(';', 2, $1, $2); }
-		
-case_stmt_no_def_list:
-		  case_stmt case_stmt_no_def_list		{ $$ = opr(';', 2, $1, $2); }
-		|
-		;
+//The default can be at the start, middle, or the end of a block of cases
+//There should be one default only
 
 expr:
           INTEGER               { $$ = con($1); }
@@ -98,15 +83,7 @@ expr:
         | expr NE expr          { $$ = opr(NE, 2, $1, $3); }
         | expr EQ expr          { $$ = opr(EQ, 2, $1, $3); }
         | '(' expr ')'          { $$ = $2; }
-		| expr AND expr			{ $$ = opr(AND, 2, $1, $3); }
-		| expr OR expr			{ $$ = opr(OR, 2, $1, $3); }
-		| NOT expr				{ $$ = opr(NOT, 1, $2); }
-		| expr BIT_AND expr		{ $$ = opr(BIT_AND, 2, $1, $3); }
-		| expr BIT_OR expr		{ $$ = opr(BIT_OR, 2, $1, $3); }
-		| expr BIT_XOR expr		{ $$ = opr(BIT_XOR, 2, $1, $3); }
-		| BIT_NOT expr			{ $$ = opr(BIT_NOT, 1, $2); }
-		| expr L_SHIFT expr		{ $$ = opr(L_SHIFT, 2, $1, $3); }
-		| expr R_SHIFT expr		{ $$ = opr(R_SHIFT, 2, $1, $3); }
+		| expr '&' '&' expr		{ $$ = opr(AND, 2, $1, $4); }
         ;
 
 %%

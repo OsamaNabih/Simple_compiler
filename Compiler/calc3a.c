@@ -15,7 +15,6 @@ int ex(nodeType *p) {
                         else if (p->opr.nops > 2)
                             ex(p->opr.op[2]);
                         return 0;
-		case SWITCH:    switch(ex(p->opr.op[0]))
         case PRINT:     printf("%d\n", ex(p->opr.op[0])); return 0;
         case ';':       ex(p->opr.op[0]); return ex(p->opr.op[1]);
         case '=':       return sym[p->opr.op[0]->id.i] = ex(p->opr.op[1]);
@@ -30,6 +29,14 @@ int ex(nodeType *p) {
         case LE:        return ex(p->opr.op[0]) <= ex(p->opr.op[1]);
         case NE:        return ex(p->opr.op[0]) != ex(p->opr.op[1]);
         case EQ:        return ex(p->opr.op[0]) == ex(p->opr.op[1]);
+		case AND:		return ex(p->opr.op[0]) && ex(p->opr.op[1]);
+		case OR:		return ex(p->opr.op[0]) || ex(p->opr.op[1]);
+		case BIT_AND:	return ex(p->opr.op[0]) & ex(p->opr.op[1]);
+		case BIT_OR:	return ex(p->opr.op[0]) | ex(p->opr.op[1]);
+		case BIT_XOR:	return ex(p->opr.op[0]) ^ ex(p->opr.op[1]);
+		case BIT_NOT:	return ~ex(p->opr.op[0]);
+		case L_SHIFT:	return ex(p->opr.op[0]) << ex(p->opr.op[1]);
+		case R_SHIFT:	return ex(p->opr.op[0]) >> ex(p->opr.op[1]);
         }
     }
     return 0;

@@ -1,3 +1,4 @@
+#include <stdio.h>
 int main() {
 	
 	int a = 5;
@@ -16,8 +17,11 @@ int main() {
 	
 	int d;
 	switch(c) {
+		case(6): 
+			while(b > 2) {
+				printf("fasdsad");
+			}
 		default: d = 7;
 		case(7): d = 5;
-		default: d = 6;
 	}
 }

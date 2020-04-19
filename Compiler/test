@@ -14,4 +14,5 @@ while(b > 0) {
 switch(c) {
 case(7): d = 5;
 default: d = 6;
+case(8): d = 7;
 }

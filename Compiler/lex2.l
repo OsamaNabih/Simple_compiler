@@ -40,13 +40,14 @@ void yyerror(char *);
 "break"			return BREAK;
 "&&"			return AND;
 "||"			return OR;
-"!"				return NOT;
 "|"				return BIT_OR;
 "&"				return BIT_AND;
 "^"				return BIT_XOR;
-"~"				return BIT_NOT;
-"<<"			return L_SHIFT;
-">>"			return R_SHIFT;
+"!"				return NOT;
+"switch"		return SWITCH;
+"case"			return CASE;
+"break"			return BREAK;
+"default"		return DEFAULT;
 
 [ \t\n]+        ;       /* ignore whitespace */
 

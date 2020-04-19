@@ -53,13 +53,23 @@ extern int yydebug;
     SWITCH = 263,
     CASE = 264,
     DEFAULT = 265,
-    IFX = 266,
-    ELSE = 267,
-    GE = 268,
-    LE = 269,
-    EQ = 270,
-    NE = 271,
-    UMINUS = 272
+    BREAK = 266,
+    AND = 267,
+    OR = 268,
+    NOT = 269,
+    BIT_OR = 270,
+    BIT_AND = 271,
+    BIT_XOR = 272,
+    BIT_NOT = 273,
+    L_SHIFT = 274,
+    R_SHIFT = 275,
+    IFX = 276,
+    ELSE = 277,
+    GE = 278,
+    LE = 279,
+    EQ = 280,
+    NE = 281,
+    UMINUS = 282
   };
 #endif
 /* Tokens.  */
@@ -71,13 +81,23 @@ extern int yydebug;
 #define SWITCH 263
 #define CASE 264
 #define DEFAULT 265
-#define IFX 266
-#define ELSE 267
-#define GE 268
-#define LE 269
-#define EQ 270
-#define NE 271
-#define UMINUS 272
+#define BREAK 266
+#define AND 267
+#define OR 268
+#define NOT 269
+#define BIT_OR 270
+#define BIT_AND 271
+#define BIT_XOR 272
+#define BIT_NOT 273
+#define L_SHIFT 274
+#define R_SHIFT 275
+#define IFX 276
+#define ELSE 277
+#define GE 278
+#define LE 279
+#define EQ 280
+#define NE 281
+#define UMINUS 282
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -90,7 +110,7 @@ union YYSTYPE
     char sIndex;                /* symbol table index */
     nodeType *nPtr;             /* node pointer */
 
-#line 94 "y.tab.h" /* yacc.c:1909  */
+#line 114 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

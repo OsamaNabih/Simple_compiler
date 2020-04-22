@@ -1,6 +1,7 @@
+print a;
 a = 5;
 if (a > 4) {
-	b = 3;
+	b = 5;
 }
 else 
 	b = 2;
@@ -10,9 +11,15 @@ while(b > 0) {
 	c = c + 1;
 	b = b - 1;
 }
-
+print b;
+print c;
+d = 0;
 switch(c) {
-case(7): d = 5;
-default: d = 6;
-case(8): d = 7;
+case(7): d = 12; break;
+case(8): d = 13; break;
+case(9): d = -1; break;
 }
+print d;
+1e8;
+d = 1e8;
+print d;

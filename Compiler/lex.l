@@ -11,7 +11,7 @@ void yyerror(char *);
                 yylval.sIndex = *yytext - 'a';
                 return VARIABLE;
             }
-
+			
 0           {
                 yylval.iValue = atoi(yytext);
                 return INTEGER;
@@ -21,6 +21,12 @@ void yyerror(char *);
                 yylval.iValue = atoi(yytext);
                 return INTEGER;
             }
+			
+
+[0-9]+(\.[0-9]+)?([eE][-+]?[0-9]+)?		{
+											yylval.dValue = atof(yytext);
+											return DOUBLE;
+										}
 
 [-()<>=+*/;{}.:] {
                 return *yytext;

@@ -47,70 +47,73 @@ extern int yydebug;
   {
     INTEGER = 258,
     VARIABLE = 259,
-    WHILE = 260,
-    IF = 261,
-    PRINT = 262,
-    SWITCH = 263,
-    CASE = 264,
-    DEFAULT = 265,
-    BREAK = 266,
-    AND = 267,
-    OR = 268,
-    NOT = 269,
-    BIT_OR = 270,
-    BIT_AND = 271,
-    BIT_XOR = 272,
-    BIT_NOT = 273,
-    L_SHIFT = 274,
-    R_SHIFT = 275,
-    IFX = 276,
-    ELSE = 277,
-    GE = 278,
-    LE = 279,
-    EQ = 280,
-    NE = 281,
-    UMINUS = 282
+    DOUBLE = 260,
+    WHILE = 261,
+    IF = 262,
+    PRINT = 263,
+    SWITCH = 264,
+    CASE = 265,
+    DEFAULT = 266,
+    BREAK = 267,
+    AND = 268,
+    OR = 269,
+    NOT = 270,
+    BIT_OR = 271,
+    BIT_AND = 272,
+    BIT_XOR = 273,
+    BIT_NOT = 274,
+    L_SHIFT = 275,
+    R_SHIFT = 276,
+    IFX = 277,
+    ELSE = 278,
+    GE = 279,
+    LE = 280,
+    EQ = 281,
+    NE = 282,
+    UMINUS = 283
   };
 #endif
 /* Tokens.  */
 #define INTEGER 258
 #define VARIABLE 259
-#define WHILE 260
-#define IF 261
-#define PRINT 262
-#define SWITCH 263
-#define CASE 264
-#define DEFAULT 265
-#define BREAK 266
-#define AND 267
-#define OR 268
-#define NOT 269
-#define BIT_OR 270
-#define BIT_AND 271
-#define BIT_XOR 272
-#define BIT_NOT 273
-#define L_SHIFT 274
-#define R_SHIFT 275
-#define IFX 276
-#define ELSE 277
-#define GE 278
-#define LE 279
-#define EQ 280
-#define NE 281
-#define UMINUS 282
+#define DOUBLE 260
+#define WHILE 261
+#define IF 262
+#define PRINT 263
+#define SWITCH 264
+#define CASE 265
+#define DEFAULT 266
+#define BREAK 267
+#define AND 268
+#define OR 269
+#define NOT 270
+#define BIT_OR 271
+#define BIT_AND 272
+#define BIT_XOR 273
+#define BIT_NOT 274
+#define L_SHIFT 275
+#define R_SHIFT 276
+#define IFX 277
+#define ELSE 278
+#define GE 279
+#define LE 280
+#define EQ 281
+#define NE 282
+#define UMINUS 283
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 
 union YYSTYPE
 {
-#line 19 "grammar.y" /* yacc.c:1909  */
+#line 20 "grammar.y" /* yacc.c:1909  */
 
     int iValue;                 /* integer value */
+	double dValue;				/* double value  */
     char sIndex;                /* symbol table index */
     nodeType *nPtr;             /* node pointer */
 
-#line 114 "y.tab.h" /* yacc.c:1909  */
+#line 117 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

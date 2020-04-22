@@ -89,6 +89,11 @@ void exNode
                 case LE:        s = "[<=]";    break;
                 case NE:        s = "[!=]";    break;
                 case EQ:        s = "[==]";    break;
+				case SWITCH:	s = "switch";  break;
+				case CASE:		s = "case";	   break;
+				case DEFAULT:	s = "default"; break;
+				case '_':		s = "_";	   break;
+				case '#':		s = "#";	   break;
             }
             break;
     }

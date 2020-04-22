@@ -7,7 +7,8 @@
 /* prototypes */
 nodeType *opr(int oper, int nops, ...);
 nodeType *id(int i);
-nodeType *con(int value);
+nodeType *intCon(int iValue);
+nodeType *doubleCon(double dValue);
 void freeNode(nodeType *p);
 int ex(nodeType *p);
 int yylex(void);
@@ -18,12 +19,14 @@ int sym[26];                    /* symbol table */
 
 %union {
     int iValue;                 /* integer value */
+	double dValue;				/* double value  */
     char sIndex;                /* symbol table index */
     nodeType *nPtr;             /* node pointer */
 };
 
 %token <iValue> INTEGER
 %token <sIndex> VARIABLE
+%token <dValue> DOUBLE
 %token WHILE IF PRINT SWITCH CASE DEFAULT BREAK 
 %token AND OR NOT 
 %token BIT_OR BIT_AND BIT_XOR BIT_NOT L_SHIFT R_SHIFT 
@@ -36,7 +39,7 @@ int sym[26];                    /* symbol table */
 %left '*' '/'
 %nonassoc UMINUS
 
-%type <nPtr> stmt expr stmt_list case_stmt default_stmt case_stmt_list case_stmt_no_def_list
+%type <nPtr> stmt expr stmt_list case_stmt default_stmt case_stmt_list switch_body
 
 %%
 
@@ -46,7 +49,7 @@ program:
 
 function:
           function stmt         { ex($2); freeNode($2); }
-        | /* NULL */
+        | %empty
         ;
 
 stmt:
@@ -57,7 +60,7 @@ stmt:
         | WHILE '(' expr ')' stmt        { $$ = opr(WHILE, 2, $3, $5); }
         | IF '(' expr ')' stmt %prec IFX { $$ = opr(IF, 2, $3, $5); }
         | IF '(' expr ')' stmt ELSE stmt { $$ = opr(IF, 3, $3, $5, $7); }
-		| SWITCH '(' expr ')' '{' case_stmt_list '}' { $$ = opr(SWITCH, 2, $3, $6); }
+		| SWITCH '(' expr ')' '{' switch_body '}' { $$ = opr(SWITCH, 2, $3, $6); }
         | '{' stmt_list '}'              { $$ = $2; }
         ;
 
@@ -72,19 +75,30 @@ case_stmt:
 
 default_stmt:
 		  DEFAULT ':' stmt_list	BREAK ';'		{ $$ = opr(DEFAULT, 1, $3); }
-
-case_stmt_list:
-		  case_stmt								{ $$ = opr(CASE, 1, $1); }
-		| default_stmt case_stmt_no_def_list	{ $$ = opr(';', 2, $1, $2); }
-		| case_stmt case_stmt_list  			{ $$ = opr(';', 2, $1, $2); }
-		
-case_stmt_no_def_list:
-		  case_stmt case_stmt_no_def_list		{ $$ = opr(';', 2, $1, $2); }
-		|
 		;
 
+case_stmt_list:
+		  case_stmt								{ $$ = opr('_', 1, $1); }
+		| case_stmt_list case_stmt   			{ $$ = opr('#', 2, $1, $2); }
+
+switch_body:
+		  case_stmt_list						{ $$ = opr('!', 1, $1); }
+		| case_stmt_list default_stmt			{ $$ = opr('#', 2, $1, $2); }
+
+/*
+case_stmt_list:
+		  case_stmt								{ $$ = opr(';', 1, $1); }
+		| case_stmt_no_def_list default_stmt 	{ $$ = opr(';', 2, $1, $2); }
+		| case_stmt_list case_stmt   			{ $$ = opr(';', 2, $1, $2); }
+		
+case_stmt_no_def_list:
+		  case_stmt case_stmt_no_def_list  		{ $$ = opr(';', 2, $1, $2); }
+		;
+*/
+
 expr:
-          INTEGER               { $$ = con($1); }
+          INTEGER               { $$ = intCon($1); }
+		| DOUBLE				{ $$ = doubleCon($1); }
         | VARIABLE              { $$ = id($1); }
         | '-' expr %prec UMINUS { $$ = opr(UMINUS, 1, $2); }
         | expr '+' expr         { $$ = opr('+', 2, $1, $3); }
@@ -111,7 +125,7 @@ expr:
 
 %%
 
-nodeType *con(int value) {
+nodeType *intCon(int iValue) {
     nodeType *p;
 
     /* allocate node */
@@ -119,9 +133,21 @@ nodeType *con(int value) {
         yyerror("out of memory");
 
     /* copy information */
-    p->type = typeCon;
-    p->con.value = value;
+	p->type = typeIntCon;
+	p->con.iValue = iValue;
+    return p;
+}
 
+nodeType *doubleCon(double dValue) {
+    nodeType *p;
+
+    /* allocate node */
+    if ((p = malloc(sizeof(nodeType))) == NULL)
+        yyerror("out of memory");
+
+    /* copy information */
+	p->type = typeDoubleCon;
+	p->con.dValue = dValue;
     return p;
 }
 

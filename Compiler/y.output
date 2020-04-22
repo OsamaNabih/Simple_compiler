@@ -14,7 +14,7 @@ Grammar
     8     | WHILE '(' expr ')' stmt
     9     | IF '(' expr ')' stmt
    10     | IF '(' expr ')' stmt ELSE stmt
-   11     | SWITCH '(' expr ')' '{' case_stmt_list '}'
+   11     | SWITCH '(' expr ')' '{' switch_body '}'
    12     | '{' stmt_list '}'
 
    13 stmt_list: stmt
@@ -25,13 +25,13 @@ Grammar
    16 default_stmt: DEFAULT ':' stmt_list BREAK ';'
 
    17 case_stmt_list: case_stmt
-   18               | default_stmt case_stmt_no_def_list
-   19               | case_stmt case_stmt_list
+   18               | case_stmt_list case_stmt
 
-   20 case_stmt_no_def_list: case_stmt case_stmt_no_def_list
-   21                      | %empty
+   19 switch_body: case_stmt_list
+   20            | case_stmt_list default_stmt
 
-   22 expr: INTEGER
+   21 expr: INTEGER
+   22     | DOUBLE
    23     | VARIABLE
    24     | '-' expr
    25     | expr '+' expr
@@ -73,57 +73,58 @@ $end (0) 0
 '{' (123) 11 12
 '}' (125) 11 12
 error (256)
-INTEGER (258) 22
+INTEGER (258) 21
 VARIABLE (259) 7 23
-WHILE (260) 8
-IF (261) 9 10
-PRINT (262) 6
-SWITCH (263) 11
-CASE (264) 15
-DEFAULT (265) 16
-BREAK (266) 15 16
-AND (267) 36
-OR (268) 37
-NOT (269) 38
-BIT_OR (270) 40
-BIT_AND (271) 39
-BIT_XOR (272) 41
-BIT_NOT (273) 42
-L_SHIFT (274) 43
-R_SHIFT (275) 44
-IFX (276)
-ELSE (277) 10
-GE (278) 31
-LE (279) 32
-EQ (280) 34
-NE (281) 33
-UMINUS (282)
+DOUBLE (260) 22
+WHILE (261) 8
+IF (262) 9 10
+PRINT (263) 6
+SWITCH (264) 11
+CASE (265) 15
+DEFAULT (266) 16
+BREAK (267) 15 16
+AND (268) 36
+OR (269) 37
+NOT (270) 38
+BIT_OR (271) 40
+BIT_AND (272) 39
+BIT_XOR (273) 41
+BIT_NOT (274) 42
+L_SHIFT (275) 43
+R_SHIFT (276) 44
+IFX (277)
+ELSE (278) 10
+GE (279) 31
+LE (280) 32
+EQ (281) 34
+NE (282) 33
+UMINUS (283)
 
 
 Nonterminals, with rules where they appear
 
-$accept (41)
+$accept (42)
     on left: 0
-program (42)
+program (43)
     on left: 1, on right: 0
-function (43)
+function (44)
     on left: 2 3, on right: 1 2
-stmt (44)
+stmt (45)
     on left: 4 5 6 7 8 9 10 11 12, on right: 2 8 9 10 13 14
-stmt_list (45)
+stmt_list (46)
     on left: 13 14, on right: 12 14 15 16
-case_stmt (46)
-    on left: 15, on right: 17 19 20
-default_stmt (47)
-    on left: 16, on right: 18
-case_stmt_list (48)
-    on left: 17 18 19, on right: 11 19
-case_stmt_no_def_list (49)
-    on left: 20 21, on right: 18 20
-expr (50)
-    on left: 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39
-    40 41 42 43 44, on right: 5 6 7 8 9 10 11 15 24 25 26 27 28 29
-    30 31 32 33 34 35 36 37 38 39 40 41 42 43 44
+case_stmt (47)
+    on left: 15, on right: 17 18
+default_stmt (48)
+    on left: 16, on right: 20
+case_stmt_list (49)
+    on left: 17 18, on right: 18 19 20
+switch_body (50)
+    on left: 19 20, on right: 11
+expr (51)
+    on left: 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38
+    39 40 41 42 43 44, on right: 5 6 7 8 9 10 11 15 24 25 26 27 28
+    29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44
 
 
 State 0
@@ -150,21 +151,22 @@ State 2
 
     INTEGER   shift, and go to state 4
     VARIABLE  shift, and go to state 5
-    WHILE     shift, and go to state 6
-    IF        shift, and go to state 7
-    PRINT     shift, and go to state 8
-    SWITCH    shift, and go to state 9
-    NOT       shift, and go to state 10
-    BIT_NOT   shift, and go to state 11
-    '-'       shift, and go to state 12
-    ';'       shift, and go to state 13
-    '('       shift, and go to state 14
-    '{'       shift, and go to state 15
+    DOUBLE    shift, and go to state 6
+    WHILE     shift, and go to state 7
+    IF        shift, and go to state 8
+    PRINT     shift, and go to state 9
+    SWITCH    shift, and go to state 10
+    NOT       shift, and go to state 11
+    BIT_NOT   shift, and go to state 12
+    '-'       shift, and go to state 13
+    ';'       shift, and go to state 14
+    '('       shift, and go to state 15
+    '{'       shift, and go to state 16
 
     $default  reduce using rule 1 (program)
 
-    stmt  go to state 16
-    expr  go to state 17
+    stmt  go to state 17
+    expr  go to state 18
 
 
 State 3
@@ -176,9 +178,9 @@ State 3
 
 State 4
 
-   22 expr: INTEGER .
+   21 expr: INTEGER .
 
-    $default  reduce using rule 22 (expr)
+    $default  reduce using rule 21 (expr)
 
 
 State 5
@@ -186,140 +188,153 @@ State 5
     7 stmt: VARIABLE . '=' expr ';'
    23 expr: VARIABLE .
 
-    '='  shift, and go to state 18
+    '='  shift, and go to state 19
 
     $default  reduce using rule 23 (expr)
 
 
 State 6
 
-    8 stmt: WHILE . '(' expr ')' stmt
+   22 expr: DOUBLE .
 
-    '('  shift, and go to state 19
+    $default  reduce using rule 22 (expr)
 
 
 State 7
 
-    9 stmt: IF . '(' expr ')' stmt
-   10     | IF . '(' expr ')' stmt ELSE stmt
+    8 stmt: WHILE . '(' expr ')' stmt
 
     '('  shift, and go to state 20
 
 
 State 8
 
-    6 stmt: PRINT . expr ';'
+    9 stmt: IF . '(' expr ')' stmt
+   10     | IF . '(' expr ')' stmt ELSE stmt
 
-    INTEGER   shift, and go to state 4
-    VARIABLE  shift, and go to state 21
-    NOT       shift, and go to state 10
-    BIT_NOT   shift, and go to state 11
-    '-'       shift, and go to state 12
-    '('       shift, and go to state 14
-
-    expr  go to state 22
+    '('  shift, and go to state 21
 
 
 State 9
 
-   11 stmt: SWITCH . '(' expr ')' '{' case_stmt_list '}'
+    6 stmt: PRINT . expr ';'
 
-    '('  shift, and go to state 23
+    INTEGER   shift, and go to state 4
+    VARIABLE  shift, and go to state 22
+    DOUBLE    shift, and go to state 6
+    NOT       shift, and go to state 11
+    BIT_NOT   shift, and go to state 12
+    '-'       shift, and go to state 13
+    '('       shift, and go to state 15
+
+    expr  go to state 23
 
 
 State 10
 
-   38 expr: NOT . expr
+   11 stmt: SWITCH . '(' expr ')' '{' switch_body '}'
 
-    INTEGER   shift, and go to state 4
-    VARIABLE  shift, and go to state 21
-    NOT       shift, and go to state 10
-    BIT_NOT   shift, and go to state 11
-    '-'       shift, and go to state 12
-    '('       shift, and go to state 14
-
-    expr  go to state 24
+    '('  shift, and go to state 24
 
 
 State 11
 
-   42 expr: BIT_NOT . expr
+   38 expr: NOT . expr
 
     INTEGER   shift, and go to state 4
-    VARIABLE  shift, and go to state 21
-    NOT       shift, and go to state 10
-    BIT_NOT   shift, and go to state 11
-    '-'       shift, and go to state 12
-    '('       shift, and go to state 14
+    VARIABLE  shift, and go to state 22
+    DOUBLE    shift, and go to state 6
+    NOT       shift, and go to state 11
+    BIT_NOT   shift, and go to state 12
+    '-'       shift, and go to state 13
+    '('       shift, and go to state 15
 
     expr  go to state 25
 
 
 State 12
 
-   24 expr: '-' . expr
+   42 expr: BIT_NOT . expr
 
     INTEGER   shift, and go to state 4
-    VARIABLE  shift, and go to state 21
-    NOT       shift, and go to state 10
-    BIT_NOT   shift, and go to state 11
-    '-'       shift, and go to state 12
-    '('       shift, and go to state 14
+    VARIABLE  shift, and go to state 22
+    DOUBLE    shift, and go to state 6
+    NOT       shift, and go to state 11
+    BIT_NOT   shift, and go to state 12
+    '-'       shift, and go to state 13
+    '('       shift, and go to state 15
 
     expr  go to state 26
 
 
 State 13
 
+   24 expr: '-' . expr
+
+    INTEGER   shift, and go to state 4
+    VARIABLE  shift, and go to state 22
+    DOUBLE    shift, and go to state 6
+    NOT       shift, and go to state 11
+    BIT_NOT   shift, and go to state 12
+    '-'       shift, and go to state 13
+    '('       shift, and go to state 15
+
+    expr  go to state 27
+
+
+State 14
+
     4 stmt: ';' .
 
     $default  reduce using rule 4 (stmt)
 
 
-State 14
+State 15
 
    35 expr: '(' . expr ')'
 
     INTEGER   shift, and go to state 4
-    VARIABLE  shift, and go to state 21
-    NOT       shift, and go to state 10
-    BIT_NOT   shift, and go to state 11
-    '-'       shift, and go to state 12
-    '('       shift, and go to state 14
+    VARIABLE  shift, and go to state 22
+    DOUBLE    shift, and go to state 6
+    NOT       shift, and go to state 11
+    BIT_NOT   shift, and go to state 12
+    '-'       shift, and go to state 13
+    '('       shift, and go to state 15
 
-    expr  go to state 27
+    expr  go to state 28
 
 
-State 15
+State 16
 
    12 stmt: '{' . stmt_list '}'
 
     INTEGER   shift, and go to state 4
     VARIABLE  shift, and go to state 5
-    WHILE     shift, and go to state 6
-    IF        shift, and go to state 7
-    PRINT     shift, and go to state 8
-    SWITCH    shift, and go to state 9
-    NOT       shift, and go to state 10
-    BIT_NOT   shift, and go to state 11
-    '-'       shift, and go to state 12
-    ';'       shift, and go to state 13
-    '('       shift, and go to state 14
-    '{'       shift, and go to state 15
+    DOUBLE    shift, and go to state 6
+    WHILE     shift, and go to state 7
+    IF        shift, and go to state 8
+    PRINT     shift, and go to state 9
+    SWITCH    shift, and go to state 10
+    NOT       shift, and go to state 11
+    BIT_NOT   shift, and go to state 12
+    '-'       shift, and go to state 13
+    ';'       shift, and go to state 14
+    '('       shift, and go to state 15
+    '{'       shift, and go to state 16
 
-    stmt       go to state 28
-    stmt_list  go to state 29
-    expr       go to state 17
+    stmt       go to state 29
+    stmt_list  go to state 30
+    expr       go to state 18
 
 
-State 16
+State 17
 
     2 function: function stmt .
 
     $default  reduce using rule 2 (function)
 
 
-State 17
+State 18
 
     5 stmt: expr . ';'
    25 expr: expr . '+' expr
@@ -340,77 +355,80 @@ State 17
    43     | expr . L_SHIFT expr
    44     | expr . R_SHIFT expr
 
-    AND      shift, and go to state 30
-    OR       shift, and go to state 31
-    BIT_OR   shift, and go to state 32
-    BIT_AND  shift, and go to state 33
-    BIT_XOR  shift, and go to state 34
-    L_SHIFT  shift, and go to state 35
-    R_SHIFT  shift, and go to state 36
-    GE       shift, and go to state 37
-    LE       shift, and go to state 38
-    EQ       shift, and go to state 39
-    NE       shift, and go to state 40
-    '>'      shift, and go to state 41
-    '<'      shift, and go to state 42
-    '+'      shift, and go to state 43
-    '-'      shift, and go to state 44
-    '*'      shift, and go to state 45
-    '/'      shift, and go to state 46
-    ';'      shift, and go to state 47
-
-
-State 18
-
-    7 stmt: VARIABLE '=' . expr ';'
-
-    INTEGER   shift, and go to state 4
-    VARIABLE  shift, and go to state 21
-    NOT       shift, and go to state 10
-    BIT_NOT   shift, and go to state 11
-    '-'       shift, and go to state 12
-    '('       shift, and go to state 14
-
-    expr  go to state 48
+    AND      shift, and go to state 31
+    OR       shift, and go to state 32
+    BIT_OR   shift, and go to state 33
+    BIT_AND  shift, and go to state 34
+    BIT_XOR  shift, and go to state 35
+    L_SHIFT  shift, and go to state 36
+    R_SHIFT  shift, and go to state 37
+    GE       shift, and go to state 38
+    LE       shift, and go to state 39
+    EQ       shift, and go to state 40
+    NE       shift, and go to state 41
+    '>'      shift, and go to state 42
+    '<'      shift, and go to state 43
+    '+'      shift, and go to state 44
+    '-'      shift, and go to state 45
+    '*'      shift, and go to state 46
+    '/'      shift, and go to state 47
+    ';'      shift, and go to state 48
 
 
 State 19
 
-    8 stmt: WHILE '(' . expr ')' stmt
+    7 stmt: VARIABLE '=' . expr ';'
 
     INTEGER   shift, and go to state 4
-    VARIABLE  shift, and go to state 21
-    NOT       shift, and go to state 10
-    BIT_NOT   shift, and go to state 11
-    '-'       shift, and go to state 12
-    '('       shift, and go to state 14
+    VARIABLE  shift, and go to state 22
+    DOUBLE    shift, and go to state 6
+    NOT       shift, and go to state 11
+    BIT_NOT   shift, and go to state 12
+    '-'       shift, and go to state 13
+    '('       shift, and go to state 15
 
     expr  go to state 49
 
 
 State 20
 
-    9 stmt: IF '(' . expr ')' stmt
-   10     | IF '(' . expr ')' stmt ELSE stmt
+    8 stmt: WHILE '(' . expr ')' stmt
 
     INTEGER   shift, and go to state 4
-    VARIABLE  shift, and go to state 21
-    NOT       shift, and go to state 10
-    BIT_NOT   shift, and go to state 11
-    '-'       shift, and go to state 12
-    '('       shift, and go to state 14
+    VARIABLE  shift, and go to state 22
+    DOUBLE    shift, and go to state 6
+    NOT       shift, and go to state 11
+    BIT_NOT   shift, and go to state 12
+    '-'       shift, and go to state 13
+    '('       shift, and go to state 15
 
     expr  go to state 50
 
 
 State 21
 
+    9 stmt: IF '(' . expr ')' stmt
+   10     | IF '(' . expr ')' stmt ELSE stmt
+
+    INTEGER   shift, and go to state 4
+    VARIABLE  shift, and go to state 22
+    DOUBLE    shift, and go to state 6
+    NOT       shift, and go to state 11
+    BIT_NOT   shift, and go to state 12
+    '-'       shift, and go to state 13
+    '('       shift, and go to state 15
+
+    expr  go to state 51
+
+
+State 22
+
    23 expr: VARIABLE .
 
     $default  reduce using rule 23 (expr)
 
 
-State 22
+State 23
 
     6 stmt: PRINT expr . ';'
    25 expr: expr . '+' expr
@@ -431,41 +449,42 @@ State 22
    43     | expr . L_SHIFT expr
    44     | expr . R_SHIFT expr
 
-    AND      shift, and go to state 30
-    OR       shift, and go to state 31
-    BIT_OR   shift, and go to state 32
-    BIT_AND  shift, and go to state 33
-    BIT_XOR  shift, and go to state 34
-    L_SHIFT  shift, and go to state 35
-    R_SHIFT  shift, and go to state 36
-    GE       shift, and go to state 37
-    LE       shift, and go to state 38
-    EQ       shift, and go to state 39
-    NE       shift, and go to state 40
-    '>'      shift, and go to state 41
-    '<'      shift, and go to state 42
-    '+'      shift, and go to state 43
-    '-'      shift, and go to state 44
-    '*'      shift, and go to state 45
-    '/'      shift, and go to state 46
-    ';'      shift, and go to state 51
-
-
-State 23
-
-   11 stmt: SWITCH '(' . expr ')' '{' case_stmt_list '}'
-
-    INTEGER   shift, and go to state 4
-    VARIABLE  shift, and go to state 21
-    NOT       shift, and go to state 10
-    BIT_NOT   shift, and go to state 11
-    '-'       shift, and go to state 12
-    '('       shift, and go to state 14
-
-    expr  go to state 52
+    AND      shift, and go to state 31
+    OR       shift, and go to state 32
+    BIT_OR   shift, and go to state 33
+    BIT_AND  shift, and go to state 34
+    BIT_XOR  shift, and go to state 35
+    L_SHIFT  shift, and go to state 36
+    R_SHIFT  shift, and go to state 37
+    GE       shift, and go to state 38
+    LE       shift, and go to state 39
+    EQ       shift, and go to state 40
+    NE       shift, and go to state 41
+    '>'      shift, and go to state 42
+    '<'      shift, and go to state 43
+    '+'      shift, and go to state 44
+    '-'      shift, and go to state 45
+    '*'      shift, and go to state 46
+    '/'      shift, and go to state 47
+    ';'      shift, and go to state 52
 
 
 State 24
+
+   11 stmt: SWITCH '(' . expr ')' '{' switch_body '}'
+
+    INTEGER   shift, and go to state 4
+    VARIABLE  shift, and go to state 22
+    DOUBLE    shift, and go to state 6
+    NOT       shift, and go to state 11
+    BIT_NOT   shift, and go to state 12
+    '-'       shift, and go to state 13
+    '('       shift, and go to state 15
+
+    expr  go to state 53
+
+
+State 25
 
    25 expr: expr . '+' expr
    26     | expr . '-' expr
@@ -486,20 +505,20 @@ State 24
    43     | expr . L_SHIFT expr
    44     | expr . R_SHIFT expr
 
-    BIT_OR   shift, and go to state 32
-    BIT_AND  shift, and go to state 33
-    BIT_XOR  shift, and go to state 34
-    L_SHIFT  shift, and go to state 35
-    R_SHIFT  shift, and go to state 36
-    '+'      shift, and go to state 43
-    '-'      shift, and go to state 44
-    '*'      shift, and go to state 45
-    '/'      shift, and go to state 46
+    BIT_OR   shift, and go to state 33
+    BIT_AND  shift, and go to state 34
+    BIT_XOR  shift, and go to state 35
+    L_SHIFT  shift, and go to state 36
+    R_SHIFT  shift, and go to state 37
+    '+'      shift, and go to state 44
+    '-'      shift, and go to state 45
+    '*'      shift, and go to state 46
+    '/'      shift, and go to state 47
 
     $default  reduce using rule 38 (expr)
 
 
-State 25
+State 26
 
    25 expr: expr . '+' expr
    26     | expr . '-' expr
@@ -520,15 +539,15 @@ State 25
    43     | expr . L_SHIFT expr
    44     | expr . R_SHIFT expr
 
-    '+'  shift, and go to state 43
-    '-'  shift, and go to state 44
-    '*'  shift, and go to state 45
-    '/'  shift, and go to state 46
+    '+'  shift, and go to state 44
+    '-'  shift, and go to state 45
+    '*'  shift, and go to state 46
+    '/'  shift, and go to state 47
 
     $default  reduce using rule 42 (expr)
 
 
-State 26
+State 27
 
    24 expr: '-' expr .
    25     | expr . '+' expr
@@ -552,7 +571,7 @@ State 26
     $default  reduce using rule 24 (expr)
 
 
-State 27
+State 28
 
    25 expr: expr . '+' expr
    26     | expr . '-' expr
@@ -573,302 +592,320 @@ State 27
    43     | expr . L_SHIFT expr
    44     | expr . R_SHIFT expr
 
-    AND      shift, and go to state 30
-    OR       shift, and go to state 31
-    BIT_OR   shift, and go to state 32
-    BIT_AND  shift, and go to state 33
-    BIT_XOR  shift, and go to state 34
-    L_SHIFT  shift, and go to state 35
-    R_SHIFT  shift, and go to state 36
-    GE       shift, and go to state 37
-    LE       shift, and go to state 38
-    EQ       shift, and go to state 39
-    NE       shift, and go to state 40
-    '>'      shift, and go to state 41
-    '<'      shift, and go to state 42
-    '+'      shift, and go to state 43
-    '-'      shift, and go to state 44
-    '*'      shift, and go to state 45
-    '/'      shift, and go to state 46
-    ')'      shift, and go to state 53
+    AND      shift, and go to state 31
+    OR       shift, and go to state 32
+    BIT_OR   shift, and go to state 33
+    BIT_AND  shift, and go to state 34
+    BIT_XOR  shift, and go to state 35
+    L_SHIFT  shift, and go to state 36
+    R_SHIFT  shift, and go to state 37
+    GE       shift, and go to state 38
+    LE       shift, and go to state 39
+    EQ       shift, and go to state 40
+    NE       shift, and go to state 41
+    '>'      shift, and go to state 42
+    '<'      shift, and go to state 43
+    '+'      shift, and go to state 44
+    '-'      shift, and go to state 45
+    '*'      shift, and go to state 46
+    '/'      shift, and go to state 47
+    ')'      shift, and go to state 54
 
 
-State 28
+State 29
 
    13 stmt_list: stmt .
 
     $default  reduce using rule 13 (stmt_list)
 
 
-State 29
+State 30
 
    12 stmt: '{' stmt_list . '}'
    14 stmt_list: stmt_list . stmt
 
     INTEGER   shift, and go to state 4
     VARIABLE  shift, and go to state 5
-    WHILE     shift, and go to state 6
-    IF        shift, and go to state 7
-    PRINT     shift, and go to state 8
-    SWITCH    shift, and go to state 9
-    NOT       shift, and go to state 10
-    BIT_NOT   shift, and go to state 11
-    '-'       shift, and go to state 12
-    ';'       shift, and go to state 13
-    '('       shift, and go to state 14
-    '{'       shift, and go to state 15
-    '}'       shift, and go to state 54
+    DOUBLE    shift, and go to state 6
+    WHILE     shift, and go to state 7
+    IF        shift, and go to state 8
+    PRINT     shift, and go to state 9
+    SWITCH    shift, and go to state 10
+    NOT       shift, and go to state 11
+    BIT_NOT   shift, and go to state 12
+    '-'       shift, and go to state 13
+    ';'       shift, and go to state 14
+    '('       shift, and go to state 15
+    '{'       shift, and go to state 16
+    '}'       shift, and go to state 55
 
-    stmt  go to state 55
-    expr  go to state 17
-
-
-State 30
-
-   36 expr: expr AND . expr
-
-    INTEGER   shift, and go to state 4
-    VARIABLE  shift, and go to state 21
-    NOT       shift, and go to state 10
-    BIT_NOT   shift, and go to state 11
-    '-'       shift, and go to state 12
-    '('       shift, and go to state 14
-
-    expr  go to state 56
+    stmt  go to state 56
+    expr  go to state 18
 
 
 State 31
 
-   37 expr: expr OR . expr
+   36 expr: expr AND . expr
 
     INTEGER   shift, and go to state 4
-    VARIABLE  shift, and go to state 21
-    NOT       shift, and go to state 10
-    BIT_NOT   shift, and go to state 11
-    '-'       shift, and go to state 12
-    '('       shift, and go to state 14
+    VARIABLE  shift, and go to state 22
+    DOUBLE    shift, and go to state 6
+    NOT       shift, and go to state 11
+    BIT_NOT   shift, and go to state 12
+    '-'       shift, and go to state 13
+    '('       shift, and go to state 15
 
     expr  go to state 57
 
 
 State 32
 
-   40 expr: expr BIT_OR . expr
+   37 expr: expr OR . expr
 
     INTEGER   shift, and go to state 4
-    VARIABLE  shift, and go to state 21
-    NOT       shift, and go to state 10
-    BIT_NOT   shift, and go to state 11
-    '-'       shift, and go to state 12
-    '('       shift, and go to state 14
+    VARIABLE  shift, and go to state 22
+    DOUBLE    shift, and go to state 6
+    NOT       shift, and go to state 11
+    BIT_NOT   shift, and go to state 12
+    '-'       shift, and go to state 13
+    '('       shift, and go to state 15
 
     expr  go to state 58
 
 
 State 33
 
-   39 expr: expr BIT_AND . expr
+   40 expr: expr BIT_OR . expr
 
     INTEGER   shift, and go to state 4
-    VARIABLE  shift, and go to state 21
-    NOT       shift, and go to state 10
-    BIT_NOT   shift, and go to state 11
-    '-'       shift, and go to state 12
-    '('       shift, and go to state 14
+    VARIABLE  shift, and go to state 22
+    DOUBLE    shift, and go to state 6
+    NOT       shift, and go to state 11
+    BIT_NOT   shift, and go to state 12
+    '-'       shift, and go to state 13
+    '('       shift, and go to state 15
 
     expr  go to state 59
 
 
 State 34
 
-   41 expr: expr BIT_XOR . expr
+   39 expr: expr BIT_AND . expr
 
     INTEGER   shift, and go to state 4
-    VARIABLE  shift, and go to state 21
-    NOT       shift, and go to state 10
-    BIT_NOT   shift, and go to state 11
-    '-'       shift, and go to state 12
-    '('       shift, and go to state 14
+    VARIABLE  shift, and go to state 22
+    DOUBLE    shift, and go to state 6
+    NOT       shift, and go to state 11
+    BIT_NOT   shift, and go to state 12
+    '-'       shift, and go to state 13
+    '('       shift, and go to state 15
 
     expr  go to state 60
 
 
 State 35
 
-   43 expr: expr L_SHIFT . expr
+   41 expr: expr BIT_XOR . expr
 
     INTEGER   shift, and go to state 4
-    VARIABLE  shift, and go to state 21
-    NOT       shift, and go to state 10
-    BIT_NOT   shift, and go to state 11
-    '-'       shift, and go to state 12
-    '('       shift, and go to state 14
+    VARIABLE  shift, and go to state 22
+    DOUBLE    shift, and go to state 6
+    NOT       shift, and go to state 11
+    BIT_NOT   shift, and go to state 12
+    '-'       shift, and go to state 13
+    '('       shift, and go to state 15
 
     expr  go to state 61
 
 
 State 36
 
-   44 expr: expr R_SHIFT . expr
+   43 expr: expr L_SHIFT . expr
 
     INTEGER   shift, and go to state 4
-    VARIABLE  shift, and go to state 21
-    NOT       shift, and go to state 10
-    BIT_NOT   shift, and go to state 11
-    '-'       shift, and go to state 12
-    '('       shift, and go to state 14
+    VARIABLE  shift, and go to state 22
+    DOUBLE    shift, and go to state 6
+    NOT       shift, and go to state 11
+    BIT_NOT   shift, and go to state 12
+    '-'       shift, and go to state 13
+    '('       shift, and go to state 15
 
     expr  go to state 62
 
 
 State 37
 
-   31 expr: expr GE . expr
+   44 expr: expr R_SHIFT . expr
 
     INTEGER   shift, and go to state 4
-    VARIABLE  shift, and go to state 21
-    NOT       shift, and go to state 10
-    BIT_NOT   shift, and go to state 11
-    '-'       shift, and go to state 12
-    '('       shift, and go to state 14
+    VARIABLE  shift, and go to state 22
+    DOUBLE    shift, and go to state 6
+    NOT       shift, and go to state 11
+    BIT_NOT   shift, and go to state 12
+    '-'       shift, and go to state 13
+    '('       shift, and go to state 15
 
     expr  go to state 63
 
 
 State 38
 
-   32 expr: expr LE . expr
+   31 expr: expr GE . expr
 
     INTEGER   shift, and go to state 4
-    VARIABLE  shift, and go to state 21
-    NOT       shift, and go to state 10
-    BIT_NOT   shift, and go to state 11
-    '-'       shift, and go to state 12
-    '('       shift, and go to state 14
+    VARIABLE  shift, and go to state 22
+    DOUBLE    shift, and go to state 6
+    NOT       shift, and go to state 11
+    BIT_NOT   shift, and go to state 12
+    '-'       shift, and go to state 13
+    '('       shift, and go to state 15
 
     expr  go to state 64
 
 
 State 39
 
-   34 expr: expr EQ . expr
+   32 expr: expr LE . expr
 
     INTEGER   shift, and go to state 4
-    VARIABLE  shift, and go to state 21
-    NOT       shift, and go to state 10
-    BIT_NOT   shift, and go to state 11
-    '-'       shift, and go to state 12
-    '('       shift, and go to state 14
+    VARIABLE  shift, and go to state 22
+    DOUBLE    shift, and go to state 6
+    NOT       shift, and go to state 11
+    BIT_NOT   shift, and go to state 12
+    '-'       shift, and go to state 13
+    '('       shift, and go to state 15
 
     expr  go to state 65
 
 
 State 40
 
-   33 expr: expr NE . expr
+   34 expr: expr EQ . expr
 
     INTEGER   shift, and go to state 4
-    VARIABLE  shift, and go to state 21
-    NOT       shift, and go to state 10
-    BIT_NOT   shift, and go to state 11
-    '-'       shift, and go to state 12
-    '('       shift, and go to state 14
+    VARIABLE  shift, and go to state 22
+    DOUBLE    shift, and go to state 6
+    NOT       shift, and go to state 11
+    BIT_NOT   shift, and go to state 12
+    '-'       shift, and go to state 13
+    '('       shift, and go to state 15
 
     expr  go to state 66
 
 
 State 41
 
-   30 expr: expr '>' . expr
+   33 expr: expr NE . expr
 
     INTEGER   shift, and go to state 4
-    VARIABLE  shift, and go to state 21
-    NOT       shift, and go to state 10
-    BIT_NOT   shift, and go to state 11
-    '-'       shift, and go to state 12
-    '('       shift, and go to state 14
+    VARIABLE  shift, and go to state 22
+    DOUBLE    shift, and go to state 6
+    NOT       shift, and go to state 11
+    BIT_NOT   shift, and go to state 12
+    '-'       shift, and go to state 13
+    '('       shift, and go to state 15
 
     expr  go to state 67
 
 
 State 42
 
-   29 expr: expr '<' . expr
+   30 expr: expr '>' . expr
 
     INTEGER   shift, and go to state 4
-    VARIABLE  shift, and go to state 21
-    NOT       shift, and go to state 10
-    BIT_NOT   shift, and go to state 11
-    '-'       shift, and go to state 12
-    '('       shift, and go to state 14
+    VARIABLE  shift, and go to state 22
+    DOUBLE    shift, and go to state 6
+    NOT       shift, and go to state 11
+    BIT_NOT   shift, and go to state 12
+    '-'       shift, and go to state 13
+    '('       shift, and go to state 15
 
     expr  go to state 68
 
 
 State 43
 
-   25 expr: expr '+' . expr
+   29 expr: expr '<' . expr
 
     INTEGER   shift, and go to state 4
-    VARIABLE  shift, and go to state 21
-    NOT       shift, and go to state 10
-    BIT_NOT   shift, and go to state 11
-    '-'       shift, and go to state 12
-    '('       shift, and go to state 14
+    VARIABLE  shift, and go to state 22
+    DOUBLE    shift, and go to state 6
+    NOT       shift, and go to state 11
+    BIT_NOT   shift, and go to state 12
+    '-'       shift, and go to state 13
+    '('       shift, and go to state 15
 
     expr  go to state 69
 
 
 State 44
 
-   26 expr: expr '-' . expr
+   25 expr: expr '+' . expr
 
     INTEGER   shift, and go to state 4
-    VARIABLE  shift, and go to state 21
-    NOT       shift, and go to state 10
-    BIT_NOT   shift, and go to state 11
-    '-'       shift, and go to state 12
-    '('       shift, and go to state 14
+    VARIABLE  shift, and go to state 22
+    DOUBLE    shift, and go to state 6
+    NOT       shift, and go to state 11
+    BIT_NOT   shift, and go to state 12
+    '-'       shift, and go to state 13
+    '('       shift, and go to state 15
 
     expr  go to state 70
 
 
 State 45
 
-   27 expr: expr '*' . expr
+   26 expr: expr '-' . expr
 
     INTEGER   shift, and go to state 4
-    VARIABLE  shift, and go to state 21
-    NOT       shift, and go to state 10
-    BIT_NOT   shift, and go to state 11
-    '-'       shift, and go to state 12
-    '('       shift, and go to state 14
+    VARIABLE  shift, and go to state 22
+    DOUBLE    shift, and go to state 6
+    NOT       shift, and go to state 11
+    BIT_NOT   shift, and go to state 12
+    '-'       shift, and go to state 13
+    '('       shift, and go to state 15
 
     expr  go to state 71
 
 
 State 46
 
-   28 expr: expr '/' . expr
+   27 expr: expr '*' . expr
 
     INTEGER   shift, and go to state 4
-    VARIABLE  shift, and go to state 21
-    NOT       shift, and go to state 10
-    BIT_NOT   shift, and go to state 11
-    '-'       shift, and go to state 12
-    '('       shift, and go to state 14
+    VARIABLE  shift, and go to state 22
+    DOUBLE    shift, and go to state 6
+    NOT       shift, and go to state 11
+    BIT_NOT   shift, and go to state 12
+    '-'       shift, and go to state 13
+    '('       shift, and go to state 15
 
     expr  go to state 72
 
 
 State 47
 
+   28 expr: expr '/' . expr
+
+    INTEGER   shift, and go to state 4
+    VARIABLE  shift, and go to state 22
+    DOUBLE    shift, and go to state 6
+    NOT       shift, and go to state 11
+    BIT_NOT   shift, and go to state 12
+    '-'       shift, and go to state 13
+    '('       shift, and go to state 15
+
+    expr  go to state 73
+
+
+State 48
+
     5 stmt: expr ';' .
 
     $default  reduce using rule 5 (stmt)
 
 
-State 48
+State 49
 
     7 stmt: VARIABLE '=' expr . ';'
    25 expr: expr . '+' expr
@@ -889,27 +926,27 @@ State 48
    43     | expr . L_SHIFT expr
    44     | expr . R_SHIFT expr
 
-    AND      shift, and go to state 30
-    OR       shift, and go to state 31
-    BIT_OR   shift, and go to state 32
-    BIT_AND  shift, and go to state 33
-    BIT_XOR  shift, and go to state 34
-    L_SHIFT  shift, and go to state 35
-    R_SHIFT  shift, and go to state 36
-    GE       shift, and go to state 37
-    LE       shift, and go to state 38
-    EQ       shift, and go to state 39
-    NE       shift, and go to state 40
-    '>'      shift, and go to state 41
-    '<'      shift, and go to state 42
-    '+'      shift, and go to state 43
-    '-'      shift, and go to state 44
-    '*'      shift, and go to state 45
-    '/'      shift, and go to state 46
-    ';'      shift, and go to state 73
+    AND      shift, and go to state 31
+    OR       shift, and go to state 32
+    BIT_OR   shift, and go to state 33
+    BIT_AND  shift, and go to state 34
+    BIT_XOR  shift, and go to state 35
+    L_SHIFT  shift, and go to state 36
+    R_SHIFT  shift, and go to state 37
+    GE       shift, and go to state 38
+    LE       shift, and go to state 39
+    EQ       shift, and go to state 40
+    NE       shift, and go to state 41
+    '>'      shift, and go to state 42
+    '<'      shift, and go to state 43
+    '+'      shift, and go to state 44
+    '-'      shift, and go to state 45
+    '*'      shift, and go to state 46
+    '/'      shift, and go to state 47
+    ';'      shift, and go to state 74
 
 
-State 49
+State 50
 
     8 stmt: WHILE '(' expr . ')' stmt
    25 expr: expr . '+' expr
@@ -930,27 +967,27 @@ State 49
    43     | expr . L_SHIFT expr
    44     | expr . R_SHIFT expr
 
-    AND      shift, and go to state 30
-    OR       shift, and go to state 31
-    BIT_OR   shift, and go to state 32
-    BIT_AND  shift, and go to state 33
-    BIT_XOR  shift, and go to state 34
-    L_SHIFT  shift, and go to state 35
-    R_SHIFT  shift, and go to state 36
-    GE       shift, and go to state 37
-    LE       shift, and go to state 38
-    EQ       shift, and go to state 39
-    NE       shift, and go to state 40
-    '>'      shift, and go to state 41
-    '<'      shift, and go to state 42
-    '+'      shift, and go to state 43
-    '-'      shift, and go to state 44
-    '*'      shift, and go to state 45
-    '/'      shift, and go to state 46
-    ')'      shift, and go to state 74
+    AND      shift, and go to state 31
+    OR       shift, and go to state 32
+    BIT_OR   shift, and go to state 33
+    BIT_AND  shift, and go to state 34
+    BIT_XOR  shift, and go to state 35
+    L_SHIFT  shift, and go to state 36
+    R_SHIFT  shift, and go to state 37
+    GE       shift, and go to state 38
+    LE       shift, and go to state 39
+    EQ       shift, and go to state 40
+    NE       shift, and go to state 41
+    '>'      shift, and go to state 42
+    '<'      shift, and go to state 43
+    '+'      shift, and go to state 44
+    '-'      shift, and go to state 45
+    '*'      shift, and go to state 46
+    '/'      shift, and go to state 47
+    ')'      shift, and go to state 75
 
 
-State 50
+State 51
 
     9 stmt: IF '(' expr . ')' stmt
    10     | IF '(' expr . ')' stmt ELSE stmt
@@ -972,36 +1009,36 @@ State 50
    43     | expr . L_SHIFT expr
    44     | expr . R_SHIFT expr
 
-    AND      shift, and go to state 30
-    OR       shift, and go to state 31
-    BIT_OR   shift, and go to state 32
-    BIT_AND  shift, and go to state 33
-    BIT_XOR  shift, and go to state 34
-    L_SHIFT  shift, and go to state 35
-    R_SHIFT  shift, and go to state 36
-    GE       shift, and go to state 37
-    LE       shift, and go to state 38
-    EQ       shift, and go to state 39
-    NE       shift, and go to state 40
-    '>'      shift, and go to state 41
-    '<'      shift, and go to state 42
-    '+'      shift, and go to state 43
-    '-'      shift, and go to state 44
-    '*'      shift, and go to state 45
-    '/'      shift, and go to state 46
-    ')'      shift, and go to state 75
+    AND      shift, and go to state 31
+    OR       shift, and go to state 32
+    BIT_OR   shift, and go to state 33
+    BIT_AND  shift, and go to state 34
+    BIT_XOR  shift, and go to state 35
+    L_SHIFT  shift, and go to state 36
+    R_SHIFT  shift, and go to state 37
+    GE       shift, and go to state 38
+    LE       shift, and go to state 39
+    EQ       shift, and go to state 40
+    NE       shift, and go to state 41
+    '>'      shift, and go to state 42
+    '<'      shift, and go to state 43
+    '+'      shift, and go to state 44
+    '-'      shift, and go to state 45
+    '*'      shift, and go to state 46
+    '/'      shift, and go to state 47
+    ')'      shift, and go to state 76
 
 
-State 51
+State 52
 
     6 stmt: PRINT expr ';' .
 
     $default  reduce using rule 6 (stmt)
 
 
-State 52
+State 53
 
-   11 stmt: SWITCH '(' expr . ')' '{' case_stmt_list '}'
+   11 stmt: SWITCH '(' expr . ')' '{' switch_body '}'
    25 expr: expr . '+' expr
    26     | expr . '-' expr
    27     | expr . '*' expr
@@ -1020,48 +1057,48 @@ State 52
    43     | expr . L_SHIFT expr
    44     | expr . R_SHIFT expr
 
-    AND      shift, and go to state 30
-    OR       shift, and go to state 31
-    BIT_OR   shift, and go to state 32
-    BIT_AND  shift, and go to state 33
-    BIT_XOR  shift, and go to state 34
-    L_SHIFT  shift, and go to state 35
-    R_SHIFT  shift, and go to state 36
-    GE       shift, and go to state 37
-    LE       shift, and go to state 38
-    EQ       shift, and go to state 39
-    NE       shift, and go to state 40
-    '>'      shift, and go to state 41
-    '<'      shift, and go to state 42
-    '+'      shift, and go to state 43
-    '-'      shift, and go to state 44
-    '*'      shift, and go to state 45
-    '/'      shift, and go to state 46
-    ')'      shift, and go to state 76
+    AND      shift, and go to state 31
+    OR       shift, and go to state 32
+    BIT_OR   shift, and go to state 33
+    BIT_AND  shift, and go to state 34
+    BIT_XOR  shift, and go to state 35
+    L_SHIFT  shift, and go to state 36
+    R_SHIFT  shift, and go to state 37
+    GE       shift, and go to state 38
+    LE       shift, and go to state 39
+    EQ       shift, and go to state 40
+    NE       shift, and go to state 41
+    '>'      shift, and go to state 42
+    '<'      shift, and go to state 43
+    '+'      shift, and go to state 44
+    '-'      shift, and go to state 45
+    '*'      shift, and go to state 46
+    '/'      shift, and go to state 47
+    ')'      shift, and go to state 77
 
 
-State 53
+State 54
 
    35 expr: '(' expr ')' .
 
     $default  reduce using rule 35 (expr)
 
 
-State 54
+State 55
 
    12 stmt: '{' stmt_list '}' .
 
     $default  reduce using rule 12 (stmt)
 
 
-State 55
+State 56
 
    14 stmt_list: stmt_list stmt .
 
     $default  reduce using rule 14 (stmt_list)
 
 
-State 56
+State 57
 
    25 expr: expr . '+' expr
    26     | expr . '-' expr
@@ -1082,20 +1119,20 @@ State 56
    43     | expr . L_SHIFT expr
    44     | expr . R_SHIFT expr
 
-    BIT_OR   shift, and go to state 32
-    BIT_AND  shift, and go to state 33
-    BIT_XOR  shift, and go to state 34
-    L_SHIFT  shift, and go to state 35
-    R_SHIFT  shift, and go to state 36
-    '+'      shift, and go to state 43
-    '-'      shift, and go to state 44
-    '*'      shift, and go to state 45
-    '/'      shift, and go to state 46
+    BIT_OR   shift, and go to state 33
+    BIT_AND  shift, and go to state 34
+    BIT_XOR  shift, and go to state 35
+    L_SHIFT  shift, and go to state 36
+    R_SHIFT  shift, and go to state 37
+    '+'      shift, and go to state 44
+    '-'      shift, and go to state 45
+    '*'      shift, and go to state 46
+    '/'      shift, and go to state 47
 
     $default  reduce using rule 36 (expr)
 
 
-State 57
+State 58
 
    25 expr: expr . '+' expr
    26     | expr . '-' expr
@@ -1116,20 +1153,20 @@ State 57
    43     | expr . L_SHIFT expr
    44     | expr . R_SHIFT expr
 
-    BIT_OR   shift, and go to state 32
-    BIT_AND  shift, and go to state 33
-    BIT_XOR  shift, and go to state 34
-    L_SHIFT  shift, and go to state 35
-    R_SHIFT  shift, and go to state 36
-    '+'      shift, and go to state 43
-    '-'      shift, and go to state 44
-    '*'      shift, and go to state 45
-    '/'      shift, and go to state 46
+    BIT_OR   shift, and go to state 33
+    BIT_AND  shift, and go to state 34
+    BIT_XOR  shift, and go to state 35
+    L_SHIFT  shift, and go to state 36
+    R_SHIFT  shift, and go to state 37
+    '+'      shift, and go to state 44
+    '-'      shift, and go to state 45
+    '*'      shift, and go to state 46
+    '/'      shift, and go to state 47
 
     $default  reduce using rule 37 (expr)
 
 
-State 58
+State 59
 
    25 expr: expr . '+' expr
    26     | expr . '-' expr
@@ -1150,15 +1187,15 @@ State 58
    43     | expr . L_SHIFT expr
    44     | expr . R_SHIFT expr
 
-    '+'  shift, and go to state 43
-    '-'  shift, and go to state 44
-    '*'  shift, and go to state 45
-    '/'  shift, and go to state 46
+    '+'  shift, and go to state 44
+    '-'  shift, and go to state 45
+    '*'  shift, and go to state 46
+    '/'  shift, and go to state 47
 
     $default  reduce using rule 40 (expr)
 
 
-State 59
+State 60
 
    25 expr: expr . '+' expr
    26     | expr . '-' expr
@@ -1179,15 +1216,15 @@ State 59
    43     | expr . L_SHIFT expr
    44     | expr . R_SHIFT expr
 
-    '+'  shift, and go to state 43
-    '-'  shift, and go to state 44
-    '*'  shift, and go to state 45
-    '/'  shift, and go to state 46
+    '+'  shift, and go to state 44
+    '-'  shift, and go to state 45
+    '*'  shift, and go to state 46
+    '/'  shift, and go to state 47
 
     $default  reduce using rule 39 (expr)
 
 
-State 60
+State 61
 
    25 expr: expr . '+' expr
    26     | expr . '-' expr
@@ -1208,41 +1245,12 @@ State 60
    43     | expr . L_SHIFT expr
    44     | expr . R_SHIFT expr
 
-    '+'  shift, and go to state 43
-    '-'  shift, and go to state 44
-    '*'  shift, and go to state 45
-    '/'  shift, and go to state 46
+    '+'  shift, and go to state 44
+    '-'  shift, and go to state 45
+    '*'  shift, and go to state 46
+    '/'  shift, and go to state 47
 
     $default  reduce using rule 41 (expr)
-
-
-State 61
-
-   25 expr: expr . '+' expr
-   26     | expr . '-' expr
-   27     | expr . '*' expr
-   28     | expr . '/' expr
-   29     | expr . '<' expr
-   30     | expr . '>' expr
-   31     | expr . GE expr
-   32     | expr . LE expr
-   33     | expr . NE expr
-   34     | expr . EQ expr
-   36     | expr . AND expr
-   37     | expr . OR expr
-   39     | expr . BIT_AND expr
-   40     | expr . BIT_OR expr
-   41     | expr . BIT_XOR expr
-   43     | expr . L_SHIFT expr
-   43     | expr L_SHIFT expr .
-   44     | expr . R_SHIFT expr
-
-    '+'  shift, and go to state 43
-    '-'  shift, and go to state 44
-    '*'  shift, and go to state 45
-    '/'  shift, and go to state 46
-
-    $default  reduce using rule 43 (expr)
 
 
 State 62
@@ -1263,18 +1271,47 @@ State 62
    40     | expr . BIT_OR expr
    41     | expr . BIT_XOR expr
    43     | expr . L_SHIFT expr
+   43     | expr L_SHIFT expr .
+   44     | expr . R_SHIFT expr
+
+    '+'  shift, and go to state 44
+    '-'  shift, and go to state 45
+    '*'  shift, and go to state 46
+    '/'  shift, and go to state 47
+
+    $default  reduce using rule 43 (expr)
+
+
+State 63
+
+   25 expr: expr . '+' expr
+   26     | expr . '-' expr
+   27     | expr . '*' expr
+   28     | expr . '/' expr
+   29     | expr . '<' expr
+   30     | expr . '>' expr
+   31     | expr . GE expr
+   32     | expr . LE expr
+   33     | expr . NE expr
+   34     | expr . EQ expr
+   36     | expr . AND expr
+   37     | expr . OR expr
+   39     | expr . BIT_AND expr
+   40     | expr . BIT_OR expr
+   41     | expr . BIT_XOR expr
+   43     | expr . L_SHIFT expr
    44     | expr . R_SHIFT expr
    44     | expr R_SHIFT expr .
 
-    '+'  shift, and go to state 43
-    '-'  shift, and go to state 44
-    '*'  shift, and go to state 45
-    '/'  shift, and go to state 46
+    '+'  shift, and go to state 44
+    '-'  shift, and go to state 45
+    '*'  shift, and go to state 46
+    '/'  shift, and go to state 47
 
     $default  reduce using rule 44 (expr)
 
 
-State 63
+State 64
 
    25 expr: expr . '+' expr
    26     | expr . '-' expr
@@ -1295,20 +1332,20 @@ State 63
    43     | expr . L_SHIFT expr
    44     | expr . R_SHIFT expr
 
-    BIT_OR   shift, and go to state 32
-    BIT_AND  shift, and go to state 33
-    BIT_XOR  shift, and go to state 34
-    L_SHIFT  shift, and go to state 35
-    R_SHIFT  shift, and go to state 36
-    '+'      shift, and go to state 43
-    '-'      shift, and go to state 44
-    '*'      shift, and go to state 45
-    '/'      shift, and go to state 46
+    BIT_OR   shift, and go to state 33
+    BIT_AND  shift, and go to state 34
+    BIT_XOR  shift, and go to state 35
+    L_SHIFT  shift, and go to state 36
+    R_SHIFT  shift, and go to state 37
+    '+'      shift, and go to state 44
+    '-'      shift, and go to state 45
+    '*'      shift, and go to state 46
+    '/'      shift, and go to state 47
 
     $default  reduce using rule 31 (expr)
 
 
-State 64
+State 65
 
    25 expr: expr . '+' expr
    26     | expr . '-' expr
@@ -1329,20 +1366,20 @@ State 64
    43     | expr . L_SHIFT expr
    44     | expr . R_SHIFT expr
 
-    BIT_OR   shift, and go to state 32
-    BIT_AND  shift, and go to state 33
-    BIT_XOR  shift, and go to state 34
-    L_SHIFT  shift, and go to state 35
-    R_SHIFT  shift, and go to state 36
-    '+'      shift, and go to state 43
-    '-'      shift, and go to state 44
-    '*'      shift, and go to state 45
-    '/'      shift, and go to state 46
+    BIT_OR   shift, and go to state 33
+    BIT_AND  shift, and go to state 34
+    BIT_XOR  shift, and go to state 35
+    L_SHIFT  shift, and go to state 36
+    R_SHIFT  shift, and go to state 37
+    '+'      shift, and go to state 44
+    '-'      shift, and go to state 45
+    '*'      shift, and go to state 46
+    '/'      shift, and go to state 47
 
     $default  reduce using rule 32 (expr)
 
 
-State 65
+State 66
 
    25 expr: expr . '+' expr
    26     | expr . '-' expr
@@ -1363,20 +1400,20 @@ State 65
    43     | expr . L_SHIFT expr
    44     | expr . R_SHIFT expr
 
-    BIT_OR   shift, and go to state 32
-    BIT_AND  shift, and go to state 33
-    BIT_XOR  shift, and go to state 34
-    L_SHIFT  shift, and go to state 35
-    R_SHIFT  shift, and go to state 36
-    '+'      shift, and go to state 43
-    '-'      shift, and go to state 44
-    '*'      shift, and go to state 45
-    '/'      shift, and go to state 46
+    BIT_OR   shift, and go to state 33
+    BIT_AND  shift, and go to state 34
+    BIT_XOR  shift, and go to state 35
+    L_SHIFT  shift, and go to state 36
+    R_SHIFT  shift, and go to state 37
+    '+'      shift, and go to state 44
+    '-'      shift, and go to state 45
+    '*'      shift, and go to state 46
+    '/'      shift, and go to state 47
 
     $default  reduce using rule 34 (expr)
 
 
-State 66
+State 67
 
    25 expr: expr . '+' expr
    26     | expr . '-' expr
@@ -1397,20 +1434,20 @@ State 66
    43     | expr . L_SHIFT expr
    44     | expr . R_SHIFT expr
 
-    BIT_OR   shift, and go to state 32
-    BIT_AND  shift, and go to state 33
-    BIT_XOR  shift, and go to state 34
-    L_SHIFT  shift, and go to state 35
-    R_SHIFT  shift, and go to state 36
-    '+'      shift, and go to state 43
-    '-'      shift, and go to state 44
-    '*'      shift, and go to state 45
-    '/'      shift, and go to state 46
+    BIT_OR   shift, and go to state 33
+    BIT_AND  shift, and go to state 34
+    BIT_XOR  shift, and go to state 35
+    L_SHIFT  shift, and go to state 36
+    R_SHIFT  shift, and go to state 37
+    '+'      shift, and go to state 44
+    '-'      shift, and go to state 45
+    '*'      shift, and go to state 46
+    '/'      shift, and go to state 47
 
     $default  reduce using rule 33 (expr)
 
 
-State 67
+State 68
 
    25 expr: expr . '+' expr
    26     | expr . '-' expr
@@ -1431,20 +1468,20 @@ State 67
    43     | expr . L_SHIFT expr
    44     | expr . R_SHIFT expr
 
-    BIT_OR   shift, and go to state 32
-    BIT_AND  shift, and go to state 33
-    BIT_XOR  shift, and go to state 34
-    L_SHIFT  shift, and go to state 35
-    R_SHIFT  shift, and go to state 36
-    '+'      shift, and go to state 43
-    '-'      shift, and go to state 44
-    '*'      shift, and go to state 45
-    '/'      shift, and go to state 46
+    BIT_OR   shift, and go to state 33
+    BIT_AND  shift, and go to state 34
+    BIT_XOR  shift, and go to state 35
+    L_SHIFT  shift, and go to state 36
+    R_SHIFT  shift, and go to state 37
+    '+'      shift, and go to state 44
+    '-'      shift, and go to state 45
+    '*'      shift, and go to state 46
+    '/'      shift, and go to state 47
 
     $default  reduce using rule 30 (expr)
 
 
-State 68
+State 69
 
    25 expr: expr . '+' expr
    26     | expr . '-' expr
@@ -1465,20 +1502,20 @@ State 68
    43     | expr . L_SHIFT expr
    44     | expr . R_SHIFT expr
 
-    BIT_OR   shift, and go to state 32
-    BIT_AND  shift, and go to state 33
-    BIT_XOR  shift, and go to state 34
-    L_SHIFT  shift, and go to state 35
-    R_SHIFT  shift, and go to state 36
-    '+'      shift, and go to state 43
-    '-'      shift, and go to state 44
-    '*'      shift, and go to state 45
-    '/'      shift, and go to state 46
+    BIT_OR   shift, and go to state 33
+    BIT_AND  shift, and go to state 34
+    BIT_XOR  shift, and go to state 35
+    L_SHIFT  shift, and go to state 36
+    R_SHIFT  shift, and go to state 37
+    '+'      shift, and go to state 44
+    '-'      shift, and go to state 45
+    '*'      shift, and go to state 46
+    '/'      shift, and go to state 47
 
     $default  reduce using rule 29 (expr)
 
 
-State 69
+State 70
 
    25 expr: expr . '+' expr
    25     | expr '+' expr .
@@ -1499,13 +1536,13 @@ State 69
    43     | expr . L_SHIFT expr
    44     | expr . R_SHIFT expr
 
-    '*'  shift, and go to state 45
-    '/'  shift, and go to state 46
+    '*'  shift, and go to state 46
+    '/'  shift, and go to state 47
 
     $default  reduce using rule 25 (expr)
 
 
-State 70
+State 71
 
    25 expr: expr . '+' expr
    26     | expr . '-' expr
@@ -1526,13 +1563,13 @@ State 70
    43     | expr . L_SHIFT expr
    44     | expr . R_SHIFT expr
 
-    '*'  shift, and go to state 45
-    '/'  shift, and go to state 46
+    '*'  shift, and go to state 46
+    '/'  shift, and go to state 47
 
     $default  reduce using rule 26 (expr)
 
 
-State 71
+State 72
 
    25 expr: expr . '+' expr
    26     | expr . '-' expr
@@ -1556,7 +1593,7 @@ State 71
     $default  reduce using rule 27 (expr)
 
 
-State 72
+State 73
 
    25 expr: expr . '+' expr
    26     | expr . '-' expr
@@ -1580,159 +1617,149 @@ State 72
     $default  reduce using rule 28 (expr)
 
 
-State 73
+State 74
 
     7 stmt: VARIABLE '=' expr ';' .
 
     $default  reduce using rule 7 (stmt)
 
 
-State 74
+State 75
 
     8 stmt: WHILE '(' expr ')' . stmt
 
     INTEGER   shift, and go to state 4
     VARIABLE  shift, and go to state 5
-    WHILE     shift, and go to state 6
-    IF        shift, and go to state 7
-    PRINT     shift, and go to state 8
-    SWITCH    shift, and go to state 9
-    NOT       shift, and go to state 10
-    BIT_NOT   shift, and go to state 11
-    '-'       shift, and go to state 12
-    ';'       shift, and go to state 13
-    '('       shift, and go to state 14
-    '{'       shift, and go to state 15
+    DOUBLE    shift, and go to state 6
+    WHILE     shift, and go to state 7
+    IF        shift, and go to state 8
+    PRINT     shift, and go to state 9
+    SWITCH    shift, and go to state 10
+    NOT       shift, and go to state 11
+    BIT_NOT   shift, and go to state 12
+    '-'       shift, and go to state 13
+    ';'       shift, and go to state 14
+    '('       shift, and go to state 15
+    '{'       shift, and go to state 16
 
-    stmt  go to state 77
-    expr  go to state 17
+    stmt  go to state 78
+    expr  go to state 18
 
 
-State 75
+State 76
 
     9 stmt: IF '(' expr ')' . stmt
    10     | IF '(' expr ')' . stmt ELSE stmt
 
     INTEGER   shift, and go to state 4
     VARIABLE  shift, and go to state 5
-    WHILE     shift, and go to state 6
-    IF        shift, and go to state 7
-    PRINT     shift, and go to state 8
-    SWITCH    shift, and go to state 9
-    NOT       shift, and go to state 10
-    BIT_NOT   shift, and go to state 11
-    '-'       shift, and go to state 12
-    ';'       shift, and go to state 13
-    '('       shift, and go to state 14
-    '{'       shift, and go to state 15
+    DOUBLE    shift, and go to state 6
+    WHILE     shift, and go to state 7
+    IF        shift, and go to state 8
+    PRINT     shift, and go to state 9
+    SWITCH    shift, and go to state 10
+    NOT       shift, and go to state 11
+    BIT_NOT   shift, and go to state 12
+    '-'       shift, and go to state 13
+    ';'       shift, and go to state 14
+    '('       shift, and go to state 15
+    '{'       shift, and go to state 16
 
-    stmt  go to state 78
-    expr  go to state 17
-
-
-State 76
-
-   11 stmt: SWITCH '(' expr ')' . '{' case_stmt_list '}'
-
-    '{'  shift, and go to state 79
+    stmt  go to state 79
+    expr  go to state 18
 
 
 State 77
+
+   11 stmt: SWITCH '(' expr ')' . '{' switch_body '}'
+
+    '{'  shift, and go to state 80
+
+
+State 78
 
     8 stmt: WHILE '(' expr ')' stmt .
 
     $default  reduce using rule 8 (stmt)
 
 
-State 78
+State 79
 
     9 stmt: IF '(' expr ')' stmt .
    10     | IF '(' expr ')' stmt . ELSE stmt
 
-    ELSE  shift, and go to state 80
+    ELSE  shift, and go to state 81
 
     $default  reduce using rule 9 (stmt)
 
 
-State 79
+State 80
 
-   11 stmt: SWITCH '(' expr ')' '{' . case_stmt_list '}'
+   11 stmt: SWITCH '(' expr ')' '{' . switch_body '}'
 
-    CASE     shift, and go to state 81
-    DEFAULT  shift, and go to state 82
+    CASE  shift, and go to state 82
 
     case_stmt       go to state 83
-    default_stmt    go to state 84
-    case_stmt_list  go to state 85
+    case_stmt_list  go to state 84
+    switch_body     go to state 85
 
 
-State 80
+State 81
 
    10 stmt: IF '(' expr ')' stmt ELSE . stmt
 
     INTEGER   shift, and go to state 4
     VARIABLE  shift, and go to state 5
-    WHILE     shift, and go to state 6
-    IF        shift, and go to state 7
-    PRINT     shift, and go to state 8
-    SWITCH    shift, and go to state 9
-    NOT       shift, and go to state 10
-    BIT_NOT   shift, and go to state 11
-    '-'       shift, and go to state 12
-    ';'       shift, and go to state 13
-    '('       shift, and go to state 14
-    '{'       shift, and go to state 15
+    DOUBLE    shift, and go to state 6
+    WHILE     shift, and go to state 7
+    IF        shift, and go to state 8
+    PRINT     shift, and go to state 9
+    SWITCH    shift, and go to state 10
+    NOT       shift, and go to state 11
+    BIT_NOT   shift, and go to state 12
+    '-'       shift, and go to state 13
+    ';'       shift, and go to state 14
+    '('       shift, and go to state 15
+    '{'       shift, and go to state 16
 
     stmt  go to state 86
-    expr  go to state 17
+    expr  go to state 18
 
 
-State 81
+State 82
 
    15 case_stmt: CASE . '(' expr ')' ':' stmt_list BREAK ';'
 
     '('  shift, and go to state 87
 
 
-State 82
-
-   16 default_stmt: DEFAULT . ':' stmt_list BREAK ';'
-
-    ':'  shift, and go to state 88
-
-
 State 83
 
    17 case_stmt_list: case_stmt .
-   19               | case_stmt . case_stmt_list
-
-    CASE     shift, and go to state 81
-    DEFAULT  shift, and go to state 82
 
     $default  reduce using rule 17 (case_stmt_list)
-
-    case_stmt       go to state 83
-    default_stmt    go to state 84
-    case_stmt_list  go to state 89
 
 
 State 84
 
-   18 case_stmt_list: default_stmt . case_stmt_no_def_list
+   18 case_stmt_list: case_stmt_list . case_stmt
+   19 switch_body: case_stmt_list .
+   20            | case_stmt_list . default_stmt
 
-    CASE  shift, and go to state 81
+    CASE     shift, and go to state 82
+    DEFAULT  shift, and go to state 88
 
-    $default  reduce using rule 21 (case_stmt_no_def_list)
+    $default  reduce using rule 19 (switch_body)
 
-    case_stmt              go to state 90
-    case_stmt_no_def_list  go to state 91
+    case_stmt     go to state 89
+    default_stmt  go to state 90
 
 
 State 85
 
-   11 stmt: SWITCH '(' expr ')' '{' case_stmt_list . '}'
+   11 stmt: SWITCH '(' expr ')' '{' switch_body . '}'
 
-    '}'  shift, and go to state 92
+    '}'  shift, and go to state 91
 
 
 State 86
@@ -1747,71 +1774,45 @@ State 87
    15 case_stmt: CASE '(' . expr ')' ':' stmt_list BREAK ';'
 
     INTEGER   shift, and go to state 4
-    VARIABLE  shift, and go to state 21
-    NOT       shift, and go to state 10
-    BIT_NOT   shift, and go to state 11
-    '-'       shift, and go to state 12
-    '('       shift, and go to state 14
+    VARIABLE  shift, and go to state 22
+    DOUBLE    shift, and go to state 6
+    NOT       shift, and go to state 11
+    BIT_NOT   shift, and go to state 12
+    '-'       shift, and go to state 13
+    '('       shift, and go to state 15
 
-    expr  go to state 93
+    expr  go to state 92
 
 
 State 88
 
-   16 default_stmt: DEFAULT ':' . stmt_list BREAK ';'
+   16 default_stmt: DEFAULT . ':' stmt_list BREAK ';'
 
-    INTEGER   shift, and go to state 4
-    VARIABLE  shift, and go to state 5
-    WHILE     shift, and go to state 6
-    IF        shift, and go to state 7
-    PRINT     shift, and go to state 8
-    SWITCH    shift, and go to state 9
-    NOT       shift, and go to state 10
-    BIT_NOT   shift, and go to state 11
-    '-'       shift, and go to state 12
-    ';'       shift, and go to state 13
-    '('       shift, and go to state 14
-    '{'       shift, and go to state 15
-
-    stmt       go to state 28
-    stmt_list  go to state 94
-    expr       go to state 17
+    ':'  shift, and go to state 93
 
 
 State 89
 
-   19 case_stmt_list: case_stmt case_stmt_list .
-
-    $default  reduce using rule 19 (case_stmt_list)
-
-
-State 90
-
-   20 case_stmt_no_def_list: case_stmt . case_stmt_no_def_list
-
-    CASE  shift, and go to state 81
-
-    $default  reduce using rule 21 (case_stmt_no_def_list)
-
-    case_stmt              go to state 90
-    case_stmt_no_def_list  go to state 95
-
-
-State 91
-
-   18 case_stmt_list: default_stmt case_stmt_no_def_list .
+   18 case_stmt_list: case_stmt_list case_stmt .
 
     $default  reduce using rule 18 (case_stmt_list)
 
 
-State 92
+State 90
 
-   11 stmt: SWITCH '(' expr ')' '{' case_stmt_list '}' .
+   20 switch_body: case_stmt_list default_stmt .
+
+    $default  reduce using rule 20 (switch_body)
+
+
+State 91
+
+   11 stmt: SWITCH '(' expr ')' '{' switch_body '}' .
 
     $default  reduce using rule 11 (stmt)
 
 
-State 93
+State 92
 
    15 case_stmt: CASE '(' expr . ')' ':' stmt_list BREAK ';'
    25 expr: expr . '+' expr
@@ -1832,61 +1833,101 @@ State 93
    43     | expr . L_SHIFT expr
    44     | expr . R_SHIFT expr
 
-    AND      shift, and go to state 30
-    OR       shift, and go to state 31
-    BIT_OR   shift, and go to state 32
-    BIT_AND  shift, and go to state 33
-    BIT_XOR  shift, and go to state 34
-    L_SHIFT  shift, and go to state 35
-    R_SHIFT  shift, and go to state 36
-    GE       shift, and go to state 37
-    LE       shift, and go to state 38
-    EQ       shift, and go to state 39
-    NE       shift, and go to state 40
-    '>'      shift, and go to state 41
-    '<'      shift, and go to state 42
-    '+'      shift, and go to state 43
-    '-'      shift, and go to state 44
-    '*'      shift, and go to state 45
-    '/'      shift, and go to state 46
-    ')'      shift, and go to state 96
+    AND      shift, and go to state 31
+    OR       shift, and go to state 32
+    BIT_OR   shift, and go to state 33
+    BIT_AND  shift, and go to state 34
+    BIT_XOR  shift, and go to state 35
+    L_SHIFT  shift, and go to state 36
+    R_SHIFT  shift, and go to state 37
+    GE       shift, and go to state 38
+    LE       shift, and go to state 39
+    EQ       shift, and go to state 40
+    NE       shift, and go to state 41
+    '>'      shift, and go to state 42
+    '<'      shift, and go to state 43
+    '+'      shift, and go to state 44
+    '-'      shift, and go to state 45
+    '*'      shift, and go to state 46
+    '/'      shift, and go to state 47
+    ')'      shift, and go to state 94
+
+
+State 93
+
+   16 default_stmt: DEFAULT ':' . stmt_list BREAK ';'
+
+    INTEGER   shift, and go to state 4
+    VARIABLE  shift, and go to state 5
+    DOUBLE    shift, and go to state 6
+    WHILE     shift, and go to state 7
+    IF        shift, and go to state 8
+    PRINT     shift, and go to state 9
+    SWITCH    shift, and go to state 10
+    NOT       shift, and go to state 11
+    BIT_NOT   shift, and go to state 12
+    '-'       shift, and go to state 13
+    ';'       shift, and go to state 14
+    '('       shift, and go to state 15
+    '{'       shift, and go to state 16
+
+    stmt       go to state 29
+    stmt_list  go to state 95
+    expr       go to state 18
 
 
 State 94
+
+   15 case_stmt: CASE '(' expr ')' . ':' stmt_list BREAK ';'
+
+    ':'  shift, and go to state 96
+
+
+State 95
 
    14 stmt_list: stmt_list . stmt
    16 default_stmt: DEFAULT ':' stmt_list . BREAK ';'
 
     INTEGER   shift, and go to state 4
     VARIABLE  shift, and go to state 5
-    WHILE     shift, and go to state 6
-    IF        shift, and go to state 7
-    PRINT     shift, and go to state 8
-    SWITCH    shift, and go to state 9
+    DOUBLE    shift, and go to state 6
+    WHILE     shift, and go to state 7
+    IF        shift, and go to state 8
+    PRINT     shift, and go to state 9
+    SWITCH    shift, and go to state 10
     BREAK     shift, and go to state 97
-    NOT       shift, and go to state 10
-    BIT_NOT   shift, and go to state 11
-    '-'       shift, and go to state 12
-    ';'       shift, and go to state 13
-    '('       shift, and go to state 14
-    '{'       shift, and go to state 15
+    NOT       shift, and go to state 11
+    BIT_NOT   shift, and go to state 12
+    '-'       shift, and go to state 13
+    ';'       shift, and go to state 14
+    '('       shift, and go to state 15
+    '{'       shift, and go to state 16
 
-    stmt  go to state 55
-    expr  go to state 17
-
-
-State 95
-
-   20 case_stmt_no_def_list: case_stmt case_stmt_no_def_list .
-
-    $default  reduce using rule 20 (case_stmt_no_def_list)
+    stmt  go to state 56
+    expr  go to state 18
 
 
 State 96
 
-   15 case_stmt: CASE '(' expr ')' . ':' stmt_list BREAK ';'
+   15 case_stmt: CASE '(' expr ')' ':' . stmt_list BREAK ';'
 
-    ':'  shift, and go to state 98
+    INTEGER   shift, and go to state 4
+    VARIABLE  shift, and go to state 5
+    DOUBLE    shift, and go to state 6
+    WHILE     shift, and go to state 7
+    IF        shift, and go to state 8
+    PRINT     shift, and go to state 9
+    SWITCH    shift, and go to state 10
+    NOT       shift, and go to state 11
+    BIT_NOT   shift, and go to state 12
+    '-'       shift, and go to state 13
+    ';'       shift, and go to state 14
+    '('       shift, and go to state 15
+    '{'       shift, and go to state 16
+
+    stmt       go to state 29
+    stmt_list  go to state 98
+    expr       go to state 18
 
 
 State 97
@@ -1898,24 +1939,26 @@ State 97
 
 State 98
 
-   15 case_stmt: CASE '(' expr ')' ':' . stmt_list BREAK ';'
+   14 stmt_list: stmt_list . stmt
+   15 case_stmt: CASE '(' expr ')' ':' stmt_list . BREAK ';'
 
     INTEGER   shift, and go to state 4
     VARIABLE  shift, and go to state 5
-    WHILE     shift, and go to state 6
-    IF        shift, and go to state 7
-    PRINT     shift, and go to state 8
-    SWITCH    shift, and go to state 9
-    NOT       shift, and go to state 10
-    BIT_NOT   shift, and go to state 11
-    '-'       shift, and go to state 12
-    ';'       shift, and go to state 13
-    '('       shift, and go to state 14
-    '{'       shift, and go to state 15
+    DOUBLE    shift, and go to state 6
+    WHILE     shift, and go to state 7
+    IF        shift, and go to state 8
+    PRINT     shift, and go to state 9
+    SWITCH    shift, and go to state 10
+    BREAK     shift, and go to state 100
+    NOT       shift, and go to state 11
+    BIT_NOT   shift, and go to state 12
+    '-'       shift, and go to state 13
+    ';'       shift, and go to state 14
+    '('       shift, and go to state 15
+    '{'       shift, and go to state 16
 
-    stmt       go to state 28
-    stmt_list  go to state 100
-    expr       go to state 17
+    stmt  go to state 56
+    expr  go to state 18
 
 
 State 99
@@ -1927,35 +1970,12 @@ State 99
 
 State 100
 
-   14 stmt_list: stmt_list . stmt
-   15 case_stmt: CASE '(' expr ')' ':' stmt_list . BREAK ';'
+   15 case_stmt: CASE '(' expr ')' ':' stmt_list BREAK . ';'
 
-    INTEGER   shift, and go to state 4
-    VARIABLE  shift, and go to state 5
-    WHILE     shift, and go to state 6
-    IF        shift, and go to state 7
-    PRINT     shift, and go to state 8
-    SWITCH    shift, and go to state 9
-    BREAK     shift, and go to state 101
-    NOT       shift, and go to state 10
-    BIT_NOT   shift, and go to state 11
-    '-'       shift, and go to state 12
-    ';'       shift, and go to state 13
-    '('       shift, and go to state 14
-    '{'       shift, and go to state 15
-
-    stmt  go to state 55
-    expr  go to state 17
+    ';'  shift, and go to state 101
 
 
 State 101
-
-   15 case_stmt: CASE '(' expr ')' ':' stmt_list BREAK . ';'
-
-    ';'  shift, and go to state 102
-
-
-State 102
 
    15 case_stmt: CASE '(' expr ')' ':' stmt_list BREAK ';' .
 

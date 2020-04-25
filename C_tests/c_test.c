@@ -1,6 +1,10 @@
 #include <stdio.h>
 int main() {
 	
+	for(int i = 0; i < 3; i = 2) {
+		printf("What's going on?\n");
+	}
+	
 	int a = 5;
 	int b;
 	if (a > 4) {

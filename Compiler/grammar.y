@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include "calc3.h"
+#include <iostream>
 
 /* prototypes */
 nodeType *opr(int oper, int nops, ...);
@@ -27,16 +28,20 @@ int sym[26];                    /* symbol table */
 %token <iValue> INTEGER
 %token <sIndex> VARIABLE
 %token <dValue> DOUBLE
-%token WHILE IF PRINT SWITCH CASE DEFAULT BREAK 
+%token INT_TYPE DOUBLE_TYPE CHAR_TYPE STRING_TYPE
+%token WHILE FOR IF PRINT SWITCH CASE DEFAULT BREAK 
 %token AND OR NOT 
-%token BIT_OR BIT_AND BIT_XOR BIT_NOT L_SHIFT R_SHIFT 
+%token BIT_OR BIT_AND BIT_XOR BIT_NOT L_SHIFT R_SHIFT INC DEC
+%token POST_INC POST_DEC PRE_INC PRE_DEC
 %nonassoc IFX
 %nonassoc ELSE
 
+%left POST_INC POST DEC
 %left GE LE EQ NE '>' '<' AND OR NOT
 %left BIT_OR BIT_AND BIT_XOR BIT_NOT L_SHIFT R_SHIFT
 %left '+' '-'
 %left '*' '/'
+%left PRE_INC PRE_DEC
 %nonassoc UMINUS
 
 %type <nPtr> stmt expr stmt_list case_stmt default_stmt case_stmt_list switch_body
@@ -44,7 +49,7 @@ int sym[26];                    /* symbol table */
 %%
 
 program:
-        function                { exit(0); }
+        function                { exit(0); cout << "Hello world\n"; }
         ;
 
 function:
@@ -56,13 +61,21 @@ stmt:
           ';'                            { $$ = opr(';', 2, NULL, NULL); }
         | expr ';'                       { $$ = $1; }
         | PRINT expr ';'                 { $$ = opr(PRINT, 1, $2); }
-        | VARIABLE '=' expr ';'          { $$ = opr('=', 2, id($1), $3); }
+        | type VARIABLE '=' expr ';'     { $$ = opr('=', 3, $1, id($2), $4); }
         | WHILE '(' expr ')' stmt        { $$ = opr(WHILE, 2, $3, $5); }
         | IF '(' expr ')' stmt %prec IFX { $$ = opr(IF, 2, $3, $5); }
         | IF '(' expr ')' stmt ELSE stmt { $$ = opr(IF, 3, $3, $5, $7); }
 		| SWITCH '(' expr ')' '{' switch_body '}' { $$ = opr(SWITCH, 2, $3, $6); }
+		| FOR '(' expr ';' expr ';' expr ';' ')' stmt	{ $$ = opr(FOR, 4, $3, $5, $7, $10);	}
         | '{' stmt_list '}'              { $$ = $2; }
         ;
+
+type:
+		  INT_TYPE						{ }
+		| DOUBLE_TYPE					{ }
+		| CHAR_TYPE						{ }
+		| STRING_TYPE					{ }
+		;
 
 stmt_list:
           stmt                  { $$ = $1; }
@@ -121,6 +134,10 @@ expr:
 		| BIT_NOT expr			{ $$ = opr(BIT_NOT, 1, $2); }
 		| expr L_SHIFT expr		{ $$ = opr(L_SHIFT, 2, $1, $3); }
 		| expr R_SHIFT expr		{ $$ = opr(R_SHIFT, 2, $1, $3); }
+		| VARIABLE INC			{ $$ = opr(POST_INC, 1, $1);	}
+		| VARIABLE DEC			{ $$ = opr(POST_DEC, 1, $1);	}
+		| INC VARIABLE			{ $$ = opr(PRE_INC, 1, $2);	}
+		| DEC VARIABLE			{ $$ = opr(PRE_DEC, 1, $2);	}
         ;
 
 %%

@@ -11,6 +11,14 @@ typedef struct {
 
 /* identifiers */
 typedef struct {
+	int type;					/* integer: 0, double: 1, char: 2, string: 3 */
+	union {
+		int ii;
+		double d;
+		char c;
+		char* s;				/* implement strings as char* for now */
+		/* string support to be added */
+	};
     int i;                      /* subscript to sym array */
 } idNodeType;
 

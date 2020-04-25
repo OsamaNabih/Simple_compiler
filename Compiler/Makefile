@@ -6,7 +6,7 @@ endif
 # utils used
 YACC = bison
 LEX = flex
-CC = gcc
+CC = g++
 CLINKER = $(CC) -o 
 # args for utils
 YACCARGS = --yacc -d -t -Wall -v -ginfo/Graph.dot

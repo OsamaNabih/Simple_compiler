@@ -9,8 +9,8 @@ int ex(nodeType *p) {
     if (!p) return 0;
     switch(p->type) {
     case typeIntCon:       return p->con.iValue;
-	case typeDoubleCon:       return p->con.dValue;
-    case typeId:        return sym[p->id.i];
+	case typeDoubleCon:    return p->con.dValue;
+    case typeId:           return sym[p->id.i];
     case typeOpr:
         switch(p->opr.oper) {
         case WHILE:     while(ex(p->opr.op[0])) ex(p->opr.op[1]); return 0;
@@ -56,6 +56,8 @@ int ex(nodeType *p) {
 						if (def_leaf != NULL)
 							ex(def_leaf);
 						return 0;
+		case FOR:		for(int i = ex(p->opr.op[0]); i < ex(p->opr.op[1]); ex(p->opr.op[2]))
+							return ex(p->opr.op[4]);
 		case CASE:		ex(p->opr.op[1]);
 						return 0;
 		case DEFAULT:	ex(p->opr.op[0]);
@@ -84,6 +86,10 @@ int ex(nodeType *p) {
 		case BIT_NOT:	return ~ex(p->opr.op[0]);
 		case L_SHIFT:	return ex(p->opr.op[0]) << ex(p->opr.op[1]);
 		case R_SHIFT:	return ex(p->opr.op[0]) >> ex(p->opr.op[1]);
+		case POST_INC:	return sym[p->opr.op[0]->id.i] += 1;
+		case POST_DEC:	return sym[p->opr.op[0]->id.i] -= 1;
+		case PRE_INC:	return sym[p->opr.op[0]->id.i] += 1;
+		case PRE_DEC:	return sym[p->opr.op[0]->id.i] -= 1;
         }
     }
     return 0;

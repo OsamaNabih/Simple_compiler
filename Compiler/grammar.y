@@ -114,7 +114,9 @@ expr:
 		| DOUBLE				{ $$ = doubleCon($1); }
         | VARIABLE              { $$ = id($1); }
         | '-' expr %prec UMINUS { $$ = opr(UMINUS, 1, $2); }
-        | expr '+' expr         { $$ = opr('+', 2, $1, $3); }
+        | expr '+' expr         {	cout << "";
+									$$ = opr('+', 2, $1, $3); 
+								}
         | expr '-' expr         { $$ = opr('-', 2, $1, $3); }
         | expr '*' expr         { $$ = opr('*', 2, $1, $3); }
         | expr '/' expr         { $$ = opr('/', 2, $1, $3); }

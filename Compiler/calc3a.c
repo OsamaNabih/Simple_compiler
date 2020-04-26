@@ -5,7 +5,7 @@
 
 void print_node(nodeType* node);
 
-int ex(nodeType *p) {
+double ex(nodeType *p) {
     if (!p) return 0;
     switch(p->type) {
     case typeIntCon:       return p->con.iValue;

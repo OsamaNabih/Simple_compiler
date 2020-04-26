@@ -1,0 +1,2 @@
+rm y.output y.tab.c y.tab.h y.tab.o result.exe lex.yy.c lex.yy.o 
+make

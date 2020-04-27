@@ -14,5 +14,6 @@ double child = 8*5+3-2/2;
 //int sibling = unitvar * 5;
 
 int son = 10;
+print son;
 //Type coercion
 int daughter = son + child;

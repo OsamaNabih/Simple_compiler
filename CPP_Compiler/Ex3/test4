@@ -1,0 +1,5 @@
+double child = 8*5+3-2.0/2;
+double parent = 5*2;
+int son = 10;
+print son;
+int daughter = son + child;

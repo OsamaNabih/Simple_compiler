@@ -1352,7 +1352,7 @@ yyreduce:
 
   case 5:
 #line 69 "grammar.y" /* yacc.c:1646  */
-    { (yyval.nPtr) = opr(';', 2, NULL, NULL); }
+    { (yyval.nPtr) = opr(';', 2, NULL, NULL); temp_id = 0; }
 #line 1357 "y.tab.c" /* yacc.c:1646  */
     break;
 
@@ -1364,25 +1364,25 @@ yyreduce:
 
   case 7:
 #line 71 "grammar.y" /* yacc.c:1646  */
-    { (yyval.nPtr) = opr(PRINT, 1, (yyvsp[-1].nPtr)); }
+    { (yyval.nPtr) = opr(PRINT, 1, (yyvsp[-1].nPtr)); temp_id = 0; }
 #line 1369 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 8:
 #line 72 "grammar.y" /* yacc.c:1646  */
-    { (yyval.nPtr) = opr('=', 2, id_ass((yyvsp[-3].sValue)), (yyvsp[-1].nPtr)); printf("\n"); }
+    { (yyval.nPtr) = opr('=', 2, id_ass((yyvsp[-3].sValue)), (yyvsp[-1].nPtr)); temp_id = 0; printf("\n"); }
 #line 1375 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
 #line 73 "grammar.y" /* yacc.c:1646  */
-    { printf("Parsed variable definition\n"); (yyval.nPtr) = opr('=', 2, id_dec((yyvsp[-4].iValue), (yyvsp[-3].sValue)), (yyvsp[-1].nPtr)); printf("\n"); }
+    { printf("Parsed variable definition\n"); (yyval.nPtr) = opr('=', 2, id_dec((yyvsp[-4].iValue), (yyvsp[-3].sValue)), (yyvsp[-1].nPtr)); temp_id = 0; printf("\n"); }
 #line 1381 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
 #line 74 "grammar.y" /* yacc.c:1646  */
-    { (yyval.nPtr) = id_dec((yyvsp[-2].iValue), (yyvsp[-1].sValue)); }
+    { (yyval.nPtr) = id_dec((yyvsp[-2].iValue), (yyvsp[-1].sValue)); temp_id = 0; }
 #line 1387 "y.tab.c" /* yacc.c:1646  */
     break;
 

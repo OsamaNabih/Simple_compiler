@@ -875,13 +875,14 @@ case 17:
 YY_RULE_SETUP
 #line 39 "lex.l"
 {
+				cout << "Matched an int: " << atoi(yytext) << endl;
                 yylval.iValue = atoi(yytext);
                 return INTEGER;
             }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 44 "lex.l"
+#line 45 "lex.l"
 { 
 				cout << "Matched an identifier: " << yytext << endl;
 				strcpy(yylval.sValue, yytext);
@@ -892,7 +893,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 52 "lex.l"
+#line 53 "lex.l"
 {
 				cout << "Matched a string: " << yytext << endl;
 				strncpy(yylval.sValue, &yytext[1], yyleng - 2);
@@ -902,15 +903,16 @@ YY_RULE_SETUP
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 59 "lex.l"
+#line 60 "lex.l"
 {
+											cout << "Matched a double: " << atof(yytext) << endl;
 											yylval.dValue = atof(yytext);
 											return DOUBLE;
 										}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 64 "lex.l"
+#line 66 "lex.l"
 {
 			cout << "Matched a char\n";
 			yylval.cValue = *yytext;
@@ -920,12 +922,12 @@ YY_RULE_SETUP
 case 22:
 /* rule 22 can match eol */
 YY_RULE_SETUP
-#line 70 "lex.l"
+#line 72 "lex.l"
 ;       /* ignore whitespace */
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 72 "lex.l"
+#line 74 "lex.l"
 {
 					yyerror("Unknown character");
 					cout << *yytext << endl;
@@ -933,10 +935,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 76 "lex.l"
+#line 78 "lex.l"
 ECHO;
 	YY_BREAK
-#line 939 "lex.yy.c"
+#line 941 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1941,7 +1943,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 76 "lex.l"
+#line 78 "lex.l"
 
 int yywrap(void) {
     return 1;

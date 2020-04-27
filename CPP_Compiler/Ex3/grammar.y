@@ -66,12 +66,12 @@ function:
         ;
 
 stmt:
-          ';'                            { $$ = opr(';', 2, NULL, NULL); }
+          ';'                            { $$ = opr(';', 2, NULL, NULL); temp_id = 0; }
         | expr ';'                       { $$ = $1; temp_id = 0; printf("\n"); }
-        | PRINT expr ';'                 { $$ = opr(PRINT, 1, $2); }
-        | VARIABLE '=' expr ';'          { $$ = opr('=', 2, id_ass($1), $3); printf("\n"); }
-		| dec_type VARIABLE '=' expr ';' { printf("Parsed variable definition\n"); $$ = opr('=', 2, id_dec($1, $2), $4); printf("\n"); }
-		| dec_type VARIABLE ';'    		 { $$ = id_dec($1, $2); }
+        | PRINT expr ';'                 { $$ = opr(PRINT, 1, $2); temp_id = 0; }
+        | VARIABLE '=' expr ';'          { $$ = opr('=', 2, id_ass($1), $3); temp_id = 0; printf("\n"); }
+		| dec_type VARIABLE '=' expr ';' { printf("Parsed variable definition\n"); $$ = opr('=', 2, id_dec($1, $2), $4); temp_id = 0; printf("\n"); }
+		| dec_type VARIABLE ';'    		 { $$ = id_dec($1, $2); temp_id = 0; }
         | WHILE '(' expr ')' stmt        { $$ = opr(WHILE, 2, $3, $5); }
         | IF '(' expr ')' stmt %prec IFX { $$ = opr(IF, 2, $3, $5); }
         | IF '(' expr ')' stmt ELSE stmt { $$ = opr(IF, 3, $3, $5, $7); }

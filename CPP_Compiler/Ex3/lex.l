@@ -37,6 +37,7 @@ using namespace std;
             }
 
 [1-9][0-9]* {
+				cout << "Matched an int: " << atoi(yytext) << endl;
                 yylval.iValue = atoi(yytext);
                 return INTEGER;
             }
@@ -57,6 +58,7 @@ using namespace std;
 			}
 			
 [0-9]+(\.[0-9]+)?([eE][-+]?[0-9]+)?		{
+											cout << "Matched a double: " << atof(yytext) << endl;
 											yylval.dValue = atof(yytext);
 											return DOUBLE;
 										}

@@ -1,26 +1,36 @@
+#include <iostream>
+#include <unordered_map>
+#include <string>
+#include <cstring>
+#include <vector>
+using namespace std;
+
 typedef enum { typeCon, typeId, typeOpr } nodeEnum;
-typedef enum { intType, doubleType } typeEnum;
+enum { intType, doubleType, charType, strType } typeEnum;
 
 /* constants */
 typedef struct {
-    	typeEnum type;				/* 0: int, 1: double */
+    	int type;				/* 0: int, 1: double */
 	union {
 		int iValue;             /* integer value */
 		double dValue;			/* double value  */
+		char cValue;
+		char sValue[100];
 	};
 } conNodeType;
 
 /* identifiers */
-typedef struct {
-    int i;                      /* subscript to sym array */
-} idNodeType;
+struct idNodeType {                      
+	char name[100];				/* subscript to sym array */
+	int type;
+};
 
 /* operators */
 typedef struct {
     int oper;                   /* operator */
     int nops;                   /* number of operands */
 	int temp_id;
-	conNodeType value;
+	conNodeType con;
     struct nodeTypeTag *op[1];	/* operands, extended at runtime */
 } oprNodeType;
 
@@ -34,11 +44,17 @@ typedef struct nodeTypeTag {
     };
 } nodeType;
 
-struct 
+struct SymTable;
 
-struct SymTable() {
-	
-	
+struct TableEntry {
+	string name;
+	conNodeType con;
+	SymTable* scope = NULL;
 };
 
-extern int sym[26];
+
+
+extern unordered_map<string, TableEntry> sym;
+extern vector<string> types {"int", "double", "char", "string"};
+
+//extern int sym[26];

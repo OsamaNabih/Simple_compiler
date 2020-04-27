@@ -1,0 +1,2 @@
+int parent = 5;
+print parent;

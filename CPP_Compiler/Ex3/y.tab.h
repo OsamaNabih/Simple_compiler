@@ -48,46 +48,59 @@ extern int yydebug;
     INTEGER = 258,
     DOUBLE = 259,
     VARIABLE = 260,
-    WHILE = 261,
-    IF = 262,
-    PRINT = 263,
-    IFX = 264,
-    ELSE = 265,
-    GE = 266,
-    LE = 267,
-    EQ = 268,
-    NE = 269,
-    UMINUS = 270
+    CHAR = 261,
+    STRING = 262,
+    WHILE = 263,
+    IF = 264,
+    PRINT = 265,
+    INT_TYPE = 266,
+    DOUBLE_TYPE = 267,
+    CHAR_TYPE = 268,
+    STR_TYPE = 269,
+    IFX = 270,
+    ELSE = 271,
+    GE = 272,
+    LE = 273,
+    EQ = 274,
+    NE = 275,
+    UMINUS = 276
   };
 #endif
 /* Tokens.  */
 #define INTEGER 258
 #define DOUBLE 259
 #define VARIABLE 260
-#define WHILE 261
-#define IF 262
-#define PRINT 263
-#define IFX 264
-#define ELSE 265
-#define GE 266
-#define LE 267
-#define EQ 268
-#define NE 269
-#define UMINUS 270
+#define CHAR 261
+#define STRING 262
+#define WHILE 263
+#define IF 264
+#define PRINT 265
+#define INT_TYPE 266
+#define DOUBLE_TYPE 267
+#define CHAR_TYPE 268
+#define STR_TYPE 269
+#define IFX 270
+#define ELSE 271
+#define GE 272
+#define LE 273
+#define EQ 274
+#define NE 275
+#define UMINUS 276
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 
 union YYSTYPE
 {
-#line 22 "grammar.y" /* yacc.c:1909  */
+#line 30 "grammar.y" /* yacc.c:1909  */
 
     int iValue;                 /* integer value */
 	double dValue;
-    char sIndex;                /* symbol table index */
     nodeType *nPtr;             /* node pointer */
+	char cValue;
+	char sValue[100];
 
-#line 91 "y.tab.h" /* yacc.c:1909  */
+#line 104 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <string>
 #include <cstring>
+#include <vector>
 using namespace std;
 
 /* prototypes */
@@ -172,36 +173,28 @@ nodeType* strCon(string s) {
 
 nodeType *id_ass(string s) {
     nodeType *p;
-	cout << "Called id_ass\n" << s << endl;
     /* allocate node */
     if ((p = (nodeType*)malloc(sizeof(nodeType))) == NULL)
         yyerror("out of memory");
 	
-	cout << "Allocated memory\n";
     /* copy information */
-	cout << "Allocated type\n";
 	p->type = typeId;
+	p->id.type = -1;
 	strcpy(p->id.name, s.c_str());
-	cout << "Return\n";
     return p;
 }
 
 nodeType *id_dec(int type, string s) {
     nodeType *p;
-	
-	cout << "Called id_dec\n" << s << endl;
-	
+		
     /* allocate node */
     if ((p = (nodeType*)malloc(sizeof(nodeType))) == NULL)
         yyerror("out of memory");
 
     /* copy information */
     p->type = typeId;
-	cout << "Allocated memory\n";
     strcpy(p->id.name, s.c_str());
-	cout << "Copied string\n";
 	p->id.type = type;
-	cout << "Return\n";
     return p;
 }
 
@@ -223,7 +216,6 @@ nodeType *opr(int oper, int nops, ...) {
     for (i = 0; i < nops; i++)
         p->opr.op[i] = va_arg(ap, nodeType*);
     va_end(ap);
-	cout << "Return from oper\n";
     return p;
 }
 

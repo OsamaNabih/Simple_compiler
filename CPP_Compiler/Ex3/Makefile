@@ -9,7 +9,8 @@ LEX = flex
 CC = g++
 CLINKER = $(CC) -o 
 # args for utils
-YACCARGS = --yacc -d -t -Wall -v -ginfo/Graph.dot
+# YACCARGS = --yacc -d -t -Wall -v -ginfo/Graph.dot
+YACCARGS = --yacc -d -t -v -ginfo/Graph.dot
 FLEXARGS = 
 CFLAGS = 
 CLINKFLAGS = calc3a.cpp

@@ -11,12 +11,14 @@ void printFromTable(nodeType* p);
 void printTable();
 int getType(nodeType* p);
 int determineType(nodeType* p);
+vector<string> lang_types {"int", "double", "char", "string"};
+
 
 double ex(nodeType *p) {
     if (!p) return 0;
     switch(p->type) {
     case typeCon:       { if (p->con.type == intType) return p->con.iValue; return p->con.dValue; }
-    case typeId:        return sym[p->id.name].dVal;
+    case typeId:        return sym[p->id.name].con.dValue;
     case typeOpr:
         switch(p->opr.oper) {
         case WHILE:     while(ex(p->opr.op[0])) ex(p->opr.op[1]); return 0;
@@ -28,23 +30,28 @@ double ex(nodeType *p) {
         case PRINT:    printFromTable(p->opr.op[0]); return 0;
         case ';':       ex(p->opr.op[0]); return ex(p->opr.op[1]);
         case '=':       {
-							//cout << "Are we here?\n";
-							sym[p->opr.op[0]->id.name].iVal = ex(p->opr.op[1]);
-							//cout << "Together we made it\n";
-							sym[p->opr.op[0]->id.name].type = p->opr.op[1]->con.type;
-							//cout << p->opr.op[1]->id.name << " = ";
+							determineType(p);
+							sym[p->opr.op[0]->id.name].con.iValue = ex(p->opr.op[1]);
+							sym[p->opr.op[0]->id.name].con.type = p->opr.op[1]->con.type;
+							cout << p->opr.op[0]->id.name << " = ";
 							//printf("%c = ", (char)p->opr.op[0]->id.i + 'a');
 							printQuad(p->opr.op[1]);
 							printf("\n");
-							cout << sym[p->opr.op[0]->id.name].iVal << endl;
-							return sym[p->opr.op[0]->id.name].iVal;
+							//cout << sym[p->opr.op[0]->id.name].con.iValue << endl;
+							return sym[p->opr.op[0]->id.name].con.iValue;
 						}
         case UMINUS:    {
 							printf("t%d = ", p->opr.temp_id);
 							printQuad(p->opr.op[0]);
 							return -ex(p->opr.op[0]);
 						}
-        case '+':       { 
+        case '+':       
+		case '-':
+		case '*':
+		case '/':			
+							
+						{
+							determineType(p);
 							double left = ex(p->opr.op[0]);
 							double right = ex(p->opr.op[1]);
 							printf("t%d = ", p->opr.temp_id);
@@ -53,36 +60,6 @@ double ex(nodeType *p) {
 							printQuad(p->opr.op[1]);
 							printf("\n");
 							return left + right;
-						}
-        case '-':       { 
-							double left = ex(p->opr.op[0]);
-							double right = ex(p->opr.op[1]);
-							printf("t%d = ", p->opr.temp_id);
-							printQuad(p->opr.op[0]);
-							printf("-");
-							printQuad(p->opr.op[1]);
-							printf("\n");
-							return left - right;
-						}
-        case '*':       { 
-							double left = ex(p->opr.op[0]);
-							double right = ex(p->opr.op[1]);
-							printf("t%d = ", p->opr.temp_id);
-							printQuad(p->opr.op[0]);
-							printf("*");
-							printQuad(p->opr.op[1]);
-							printf("\n");
-							return left * right;
-						}
-        case '/':       { 
-							double left = ex(p->opr.op[0]);
-							double right = ex(p->opr.op[1]);
-							printf("t%d = ", p->opr.temp_id);
-							printQuad(p->opr.op[0]);
-							printf("/");
-							printQuad(p->opr.op[1]);
-							printf("\n");
-							return left / right;
 						}
         case '<':       return ex(p->opr.op[0]) < ex(p->opr.op[1]);
         case '>':       return ex(p->opr.op[0]) > ex(p->opr.op[1]);
@@ -109,9 +86,9 @@ void printValue(nodeType* p) {
 	else if (con.type == doubleType)
 		printf(" %f ", con.dValue);
 	else if (con.type == charType)
-		printf(" %c ", con.charValue;
+		printf(" %c ", con.cValue);
 	else if (con.type == strType)
-		printf(" %s ", con.strValue;
+		printf(" %s ", con.sValue);
 }
 
 void printQuad(nodeType* p) {
@@ -120,7 +97,7 @@ void printQuad(nodeType* p) {
 	else if (p->type == typeOpr)
 		printf(" t%d ", p->opr.temp_id);
 	else if (p->type == typeId)
-		cout << p->id.i;
+		printf(" %s ", p->id.name);
 }
 
 double getValue(nodeType* p) {
@@ -144,15 +121,15 @@ void printFromTable(nodeType* p) {
 		else printf("No symbol matched\n");
 		if (p->id.type == intType) {
 			printf("Int type was found\n");
-			printf("%d\n", sym[p->id.name].iVal);
+			printf("%d\n", sym[p->id.name].con.iValue);
 			
 		}
 		else if (p->id.type == doubleType)
-			printf("%f\n", sym[p->id.name].dVal);
+			printf("%f\n", sym[p->id.name].con.dValue);
 		else if (p->id.type == charType)
-			printf("%c\n", sym[p->id.name].cVal);
+			printf("%c\n", sym[p->id.name].con.cValue);
 		else if (p->id.type == strType)
-			printf("%s\n", sym[p->id.name].sVal);	
+			printf("%s\n", sym[p->id.name].con.sValue);	
 		}
 	printTable();
 }
@@ -160,7 +137,7 @@ void printFromTable(nodeType* p) {
 void printTable() {
 	for(auto kv : sym) {
 		cout << kv.first << " ";
-		cout << kv.second.iVal << " " << kv.second.type << endl;
+		cout << kv.second.con.iValue << " " << kv.second.con.type << endl;
 	}		
 	cout << endl;
 }
@@ -171,10 +148,13 @@ int getType(nodeType* p) {
 	else if (p->type == typeId) {
 		if (sym.find(p->id.name) !=  sym.end())
 			return sym[p->id.name].con.type;
-		else {
+		else if (p->id.type == -1) {
 			cout << "Variable: " << p->id.name << " hasn't been initialized\n";
+			throw "Variable: %s hasn't been initialized\n", p->id.name;
 			return -1;
 		}
+		else
+			return p->id.type;
 	}
 	else if (p->type == typeCon)
 		return p->con.type;
@@ -184,10 +164,17 @@ int getType(nodeType* p) {
 int determineType(nodeType* p) {
 	int left_type = getType(p->opr.op[0]);
 	int right_type = getType(p->opr.op[1]);
-	if (left_type != right_type) {
-		cout << "Type mismatch! Left op is type: " << types[left_type] << ", right op is type: " << types[right_type] << endl;
-		throw("Type mismatch");
+	if ((left_type == intType && right_type == doubleType) || (right_type == intType && left_type == doubleType)) {
+		if (left_type == intType && p->type == typeOpr && p->opr.oper == '=')
+			printf("Assigning double to int, data loss due to truncation\n");
+		else
+			printf("Coercion from int to double\n");
+		return doubleType;
 	}
-	if ((left_type == intType && right_type == doubleType) || (right_type == intType && left_type == doubleType))
-		cout << "Coercion bet. int and double\n";
+	
+	if (left_type != right_type) {
+		cout << "Type mismatch! Left op is type: " << lang_types[left_type] << ", right op is type: " << lang_types[right_type] << endl;
+		throw "Type mismatch";
+	}
+	return -1;
 }

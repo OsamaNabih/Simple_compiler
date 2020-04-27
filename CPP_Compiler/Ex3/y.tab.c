@@ -72,6 +72,7 @@
 #include <unordered_map>
 #include <string>
 #include <cstring>
+#include <vector>
 using namespace std;
 
 /* prototypes */
@@ -91,7 +92,7 @@ unordered_map<string, TableEntry> sym;                    /* symbol table */
 
 static int temp_id = 0;
 
-#line 95 "y.tab.c" /* yacc.c:339  */
+#line 96 "y.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -173,7 +174,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 30 "grammar.y" /* yacc.c:355  */
+#line 31 "grammar.y" /* yacc.c:355  */
 
     int iValue;                 /* integer value */
 	double dValue;
@@ -181,7 +182,7 @@ union YYSTYPE
 	char cValue;
 	char sValue[100];
 
-#line 185 "y.tab.c" /* yacc.c:355  */
+#line 186 "y.tab.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -198,7 +199,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 202 "y.tab.c" /* yacc.c:358  */
+#line 203 "y.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -497,10 +498,10 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    59,    59,    63,    64,    68,    69,    70,    71,    72,
-      73,    74,    75,    76,    77,    81,    82,    86,    87,    88,
-      89,    90,    91,    92,    93,    94,    95,    96,    97,    98,
-      99,   100,   101,   102,   106,   107,   108,   109
+       0,    60,    60,    64,    65,    69,    70,    71,    72,    73,
+      74,    75,    76,    77,    78,    82,    83,    87,    88,    89,
+      90,    91,    92,    93,    94,    95,    96,    97,    98,    99,
+     100,   101,   102,   103,   107,   108,   109,   110
 };
 #endif
 
@@ -1338,217 +1339,217 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 59 "grammar.y" /* yacc.c:1646  */
+#line 60 "grammar.y" /* yacc.c:1646  */
     { exit(0); }
-#line 1344 "y.tab.c" /* yacc.c:1646  */
+#line 1345 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 63 "grammar.y" /* yacc.c:1646  */
+#line 64 "grammar.y" /* yacc.c:1646  */
     { ex((yyvsp[0].nPtr)); freeNode((yyvsp[0].nPtr)); }
-#line 1350 "y.tab.c" /* yacc.c:1646  */
+#line 1351 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 68 "grammar.y" /* yacc.c:1646  */
+#line 69 "grammar.y" /* yacc.c:1646  */
     { (yyval.nPtr) = opr(';', 2, NULL, NULL); }
-#line 1356 "y.tab.c" /* yacc.c:1646  */
+#line 1357 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 69 "grammar.y" /* yacc.c:1646  */
+#line 70 "grammar.y" /* yacc.c:1646  */
     { (yyval.nPtr) = (yyvsp[-1].nPtr); temp_id = 0; printf("\n"); }
-#line 1362 "y.tab.c" /* yacc.c:1646  */
+#line 1363 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 70 "grammar.y" /* yacc.c:1646  */
+#line 71 "grammar.y" /* yacc.c:1646  */
     { (yyval.nPtr) = opr(PRINT, 1, (yyvsp[-1].nPtr)); }
-#line 1368 "y.tab.c" /* yacc.c:1646  */
+#line 1369 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 71 "grammar.y" /* yacc.c:1646  */
+#line 72 "grammar.y" /* yacc.c:1646  */
     { (yyval.nPtr) = opr('=', 2, id_ass((yyvsp[-3].sValue)), (yyvsp[-1].nPtr)); printf("\n"); }
-#line 1374 "y.tab.c" /* yacc.c:1646  */
+#line 1375 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 72 "grammar.y" /* yacc.c:1646  */
+#line 73 "grammar.y" /* yacc.c:1646  */
     { printf("Parsed variable definition\n"); (yyval.nPtr) = opr('=', 2, id_dec((yyvsp[-4].iValue), (yyvsp[-3].sValue)), (yyvsp[-1].nPtr)); printf("\n"); }
-#line 1380 "y.tab.c" /* yacc.c:1646  */
+#line 1381 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 73 "grammar.y" /* yacc.c:1646  */
+#line 74 "grammar.y" /* yacc.c:1646  */
     { (yyval.nPtr) = id_dec((yyvsp[-2].iValue), (yyvsp[-1].sValue)); }
-#line 1386 "y.tab.c" /* yacc.c:1646  */
+#line 1387 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 74 "grammar.y" /* yacc.c:1646  */
+#line 75 "grammar.y" /* yacc.c:1646  */
     { (yyval.nPtr) = opr(WHILE, 2, (yyvsp[-2].nPtr), (yyvsp[0].nPtr)); }
-#line 1392 "y.tab.c" /* yacc.c:1646  */
+#line 1393 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 75 "grammar.y" /* yacc.c:1646  */
+#line 76 "grammar.y" /* yacc.c:1646  */
     { (yyval.nPtr) = opr(IF, 2, (yyvsp[-2].nPtr), (yyvsp[0].nPtr)); }
-#line 1398 "y.tab.c" /* yacc.c:1646  */
+#line 1399 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 76 "grammar.y" /* yacc.c:1646  */
+#line 77 "grammar.y" /* yacc.c:1646  */
     { (yyval.nPtr) = opr(IF, 3, (yyvsp[-4].nPtr), (yyvsp[-2].nPtr), (yyvsp[0].nPtr)); }
-#line 1404 "y.tab.c" /* yacc.c:1646  */
+#line 1405 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 77 "grammar.y" /* yacc.c:1646  */
+#line 78 "grammar.y" /* yacc.c:1646  */
     { (yyval.nPtr) = (yyvsp[-1].nPtr); }
-#line 1410 "y.tab.c" /* yacc.c:1646  */
+#line 1411 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 81 "grammar.y" /* yacc.c:1646  */
+#line 82 "grammar.y" /* yacc.c:1646  */
     { (yyval.nPtr) = (yyvsp[0].nPtr); }
-#line 1416 "y.tab.c" /* yacc.c:1646  */
+#line 1417 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 82 "grammar.y" /* yacc.c:1646  */
+#line 83 "grammar.y" /* yacc.c:1646  */
     { (yyval.nPtr) = opr(';', 2, (yyvsp[-1].nPtr), (yyvsp[0].nPtr)); }
-#line 1422 "y.tab.c" /* yacc.c:1646  */
+#line 1423 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 86 "grammar.y" /* yacc.c:1646  */
+#line 87 "grammar.y" /* yacc.c:1646  */
     { printf("Parsed an int\n"); (yyval.nPtr) = intCon((yyvsp[0].iValue)); }
-#line 1428 "y.tab.c" /* yacc.c:1646  */
+#line 1429 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 87 "grammar.y" /* yacc.c:1646  */
+#line 88 "grammar.y" /* yacc.c:1646  */
     { (yyval.nPtr) = doubleCon((yyvsp[0].dValue)); }
-#line 1434 "y.tab.c" /* yacc.c:1646  */
+#line 1435 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 88 "grammar.y" /* yacc.c:1646  */
+#line 89 "grammar.y" /* yacc.c:1646  */
     { (yyval.nPtr) = charCon((yyvsp[0].cValue));	}
-#line 1440 "y.tab.c" /* yacc.c:1646  */
+#line 1441 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 89 "grammar.y" /* yacc.c:1646  */
+#line 90 "grammar.y" /* yacc.c:1646  */
     { (yyval.nPtr) = strCon((yyvsp[0].sValue));	}
-#line 1446 "y.tab.c" /* yacc.c:1646  */
+#line 1447 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 90 "grammar.y" /* yacc.c:1646  */
+#line 91 "grammar.y" /* yacc.c:1646  */
     { printf("Parsed a variable\n"); (yyval.nPtr) = id_ass((yyvsp[0].sValue)); }
-#line 1452 "y.tab.c" /* yacc.c:1646  */
+#line 1453 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 91 "grammar.y" /* yacc.c:1646  */
+#line 92 "grammar.y" /* yacc.c:1646  */
     { (yyval.nPtr) = opr(UMINUS, 1, (yyvsp[0].nPtr)); }
-#line 1458 "y.tab.c" /* yacc.c:1646  */
+#line 1459 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 92 "grammar.y" /* yacc.c:1646  */
+#line 93 "grammar.y" /* yacc.c:1646  */
     { (yyval.nPtr) = opr('+', 2, (yyvsp[-2].nPtr), (yyvsp[0].nPtr)); }
-#line 1464 "y.tab.c" /* yacc.c:1646  */
+#line 1465 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 93 "grammar.y" /* yacc.c:1646  */
+#line 94 "grammar.y" /* yacc.c:1646  */
     { (yyval.nPtr) = opr('-', 2, (yyvsp[-2].nPtr), (yyvsp[0].nPtr)); }
-#line 1470 "y.tab.c" /* yacc.c:1646  */
+#line 1471 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 94 "grammar.y" /* yacc.c:1646  */
+#line 95 "grammar.y" /* yacc.c:1646  */
     { (yyval.nPtr) = opr('*', 2, (yyvsp[-2].nPtr), (yyvsp[0].nPtr)); }
-#line 1476 "y.tab.c" /* yacc.c:1646  */
+#line 1477 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 95 "grammar.y" /* yacc.c:1646  */
+#line 96 "grammar.y" /* yacc.c:1646  */
     { (yyval.nPtr) = opr('/', 2, (yyvsp[-2].nPtr), (yyvsp[0].nPtr)); }
-#line 1482 "y.tab.c" /* yacc.c:1646  */
+#line 1483 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 96 "grammar.y" /* yacc.c:1646  */
+#line 97 "grammar.y" /* yacc.c:1646  */
     { (yyval.nPtr) = opr('<', 2, (yyvsp[-2].nPtr), (yyvsp[0].nPtr)); }
-#line 1488 "y.tab.c" /* yacc.c:1646  */
+#line 1489 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 28:
-#line 97 "grammar.y" /* yacc.c:1646  */
+#line 98 "grammar.y" /* yacc.c:1646  */
     { (yyval.nPtr) = opr('>', 2, (yyvsp[-2].nPtr), (yyvsp[0].nPtr)); }
-#line 1494 "y.tab.c" /* yacc.c:1646  */
+#line 1495 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 29:
-#line 98 "grammar.y" /* yacc.c:1646  */
+#line 99 "grammar.y" /* yacc.c:1646  */
     { (yyval.nPtr) = opr(GE, 2, (yyvsp[-2].nPtr), (yyvsp[0].nPtr)); }
-#line 1500 "y.tab.c" /* yacc.c:1646  */
+#line 1501 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 30:
-#line 99 "grammar.y" /* yacc.c:1646  */
+#line 100 "grammar.y" /* yacc.c:1646  */
     { (yyval.nPtr) = opr(LE, 2, (yyvsp[-2].nPtr), (yyvsp[0].nPtr)); }
-#line 1506 "y.tab.c" /* yacc.c:1646  */
+#line 1507 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 100 "grammar.y" /* yacc.c:1646  */
+#line 101 "grammar.y" /* yacc.c:1646  */
     { (yyval.nPtr) = opr(NE, 2, (yyvsp[-2].nPtr), (yyvsp[0].nPtr)); }
-#line 1512 "y.tab.c" /* yacc.c:1646  */
+#line 1513 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 101 "grammar.y" /* yacc.c:1646  */
+#line 102 "grammar.y" /* yacc.c:1646  */
     { (yyval.nPtr) = opr(EQ, 2, (yyvsp[-2].nPtr), (yyvsp[0].nPtr)); }
-#line 1518 "y.tab.c" /* yacc.c:1646  */
+#line 1519 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 102 "grammar.y" /* yacc.c:1646  */
+#line 103 "grammar.y" /* yacc.c:1646  */
     { (yyval.nPtr) = (yyvsp[-1].nPtr); }
-#line 1524 "y.tab.c" /* yacc.c:1646  */
+#line 1525 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 106 "grammar.y" /* yacc.c:1646  */
+#line 107 "grammar.y" /* yacc.c:1646  */
     { printf("Parsed an int type\n"); (yyval.iValue) = intType; }
-#line 1530 "y.tab.c" /* yacc.c:1646  */
+#line 1531 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 107 "grammar.y" /* yacc.c:1646  */
+#line 108 "grammar.y" /* yacc.c:1646  */
     { (yyval.iValue) = doubleType; }
-#line 1536 "y.tab.c" /* yacc.c:1646  */
+#line 1537 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 108 "grammar.y" /* yacc.c:1646  */
+#line 109 "grammar.y" /* yacc.c:1646  */
     { (yyval.iValue) = charType; }
-#line 1542 "y.tab.c" /* yacc.c:1646  */
+#line 1543 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 37:
-#line 109 "grammar.y" /* yacc.c:1646  */
+#line 110 "grammar.y" /* yacc.c:1646  */
     { (yyval.iValue) = strType; }
-#line 1548 "y.tab.c" /* yacc.c:1646  */
+#line 1549 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1552 "y.tab.c" /* yacc.c:1646  */
+#line 1553 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1776,7 +1777,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 111 "grammar.y" /* yacc.c:1906  */
+#line 112 "grammar.y" /* yacc.c:1906  */
 
 
 nodeType *intCon(int value) {
@@ -1841,36 +1842,28 @@ nodeType* strCon(string s) {
 
 nodeType *id_ass(string s) {
     nodeType *p;
-	cout << "Called id_ass\n" << s << endl;
     /* allocate node */
     if ((p = (nodeType*)malloc(sizeof(nodeType))) == NULL)
         yyerror("out of memory");
 	
-	cout << "Allocated memory\n";
     /* copy information */
-	cout << "Allocated type\n";
 	p->type = typeId;
+	p->id.type = -1;
 	strcpy(p->id.name, s.c_str());
-	cout << "Return\n";
     return p;
 }
 
 nodeType *id_dec(int type, string s) {
     nodeType *p;
-	
-	cout << "Called id_dec\n" << s << endl;
-	
+		
     /* allocate node */
     if ((p = (nodeType*)malloc(sizeof(nodeType))) == NULL)
         yyerror("out of memory");
 
     /* copy information */
     p->type = typeId;
-	cout << "Allocated memory\n";
     strcpy(p->id.name, s.c_str());
-	cout << "Copied string\n";
 	p->id.type = type;
-	cout << "Return\n";
     return p;
 }
 
@@ -1892,7 +1885,6 @@ nodeType *opr(int oper, int nops, ...) {
     for (i = 0; i < nops; i++)
         p->opr.op[i] = va_arg(ap, nodeType*);
     va_end(ap);
-	cout << "Return from oper\n";
     return p;
 }
 

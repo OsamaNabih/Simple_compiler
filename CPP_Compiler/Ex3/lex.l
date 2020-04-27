@@ -22,7 +22,8 @@ using namespace std;
 "double"		return DOUBLE_TYPE;
 "char"			return CHAR_TYPE;
 "string"		return STR_TYPE;
-
+"//".*			;
+"/*".*"*/"		;
 
 
 [-()<>=+*/;{}.] {
@@ -44,8 +45,6 @@ using namespace std;
 				cout << "Matched an identifier: " << yytext << endl;
 				strcpy(yylval.sValue, yytext);
 				//yylval.sValue[yytext-1] = '\0';
-				cout << "llval identifier: ";
-				cout << yylval.sValue << endl;
 				//yylval.s = yytext;
 				return VARIABLE;
             }
@@ -53,7 +52,6 @@ using namespace std;
 \".*\"		{
 				cout << "Matched a string: " << yytext << endl;
 				strncpy(yylval.sValue, &yytext[1], yyleng - 2);
-				cout << "After clipping: " << yylval.sValue << endl;
 				//yylval.sValue[yytext-1] = '\0';
 				return STRING;
 			}

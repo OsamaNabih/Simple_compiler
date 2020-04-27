@@ -55,6 +55,5 @@ struct TableEntry {
 
 
 extern unordered_map<string, TableEntry> sym;
-extern vector<string> types {"int", "double", "char", "string"};
 
 //extern int sym[26];

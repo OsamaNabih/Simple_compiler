@@ -1850,6 +1850,8 @@ nodeType *id_ass(string s) {
 	p->type = typeId;
 	p->id.type = -1;
 	strcpy(p->id.name, s.c_str());
+	if (sym.find(p->id.name) !=  sym.end())
+		p->id.type = sym[p->id.name].con.type;
     return p;
 }
 

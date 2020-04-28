@@ -1,2 +1,8 @@
 int a = 5*2;
 double b = 6*2;
+//int num = 'cs';
+//int ch = "strrr";
+//double dd = "strr";
+int zz = a + b;
+
+print b;

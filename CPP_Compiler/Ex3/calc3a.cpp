@@ -35,9 +35,15 @@ double ex(nodeType *p) {
         case PRINT:    printFromTable(p->opr.op[0]); return 0;
         case ';':       ex(p->opr.op[0]); return ex(p->opr.op[1]);
         case '=':       {
+							double right = ex(p->opr.op[1]);
 							determineType(p);
+							int type = p->opr.con.type = p->opr.op[0]->id.type;
+							cout << "Determined type: " << type << "left type: " << p->opr.op[0]->id.type << endl;
 							//TODO assign to proper field
-							sym[p->opr.op[0]->id.name].con.iValue = ex(p->opr.op[1]);
+							if (type == intType)
+								sym[p->opr.op[0]->id.name].con.iValue = right;
+							else if (type == doubleType)
+								sym[p->opr.op[0]->id.name].con.dValue = right;
 							sym[p->opr.op[0]->id.name].con.type = p->opr.op[0]->id.type;
 							cout << p->opr.op[0]->id.name << " = ";
 							//printf("%c = ", (char)p->opr.op[0]->id.i + 'a');
@@ -153,7 +159,7 @@ void printTable() {
 }
 
 int getType(nodeType* p) {
-	if (p->type == typeOpr)
+	if (p->type == typeOpr) 
 		return p->opr.con.type;
 	else if (p->type == typeId) {
 		if (sym.find(p->id.name) !=  sym.end())
@@ -164,12 +170,12 @@ int getType(nodeType* p) {
 			cout << "Why am I here though2?\n";
 			return -1;
 		}
-		else
-			return p->id.type;
+		else 
+			return p->id.type; 
 	}
 	else if (p->type == typeCon)
 		return p->con.type;
-	cout << "Why am I here though?\n";
+	cout << "About to return type -1\n";
 	return -1;
 }
 
@@ -193,7 +199,7 @@ int determineType(nodeType* p) {
 	}
 	if (p->opr.oper != '=' && (left_type == charType || left_type == strType || right_type == charType || right_type == strType))
 		throw "Operation not defined for types %s %s", lang_types[left_type], lang_types[right_type];
-	cout << "Why am I here though3?\n";
+	cout << "About to return type -1 in determine type\n";
 	return p->opr.con.type = -1;
 }
 
